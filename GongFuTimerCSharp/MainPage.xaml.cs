@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
 using System.Runtime.InteropServices.WindowsRuntime;
 using Windows.Foundation;
 using Windows.Foundation.Collections;
@@ -93,12 +95,16 @@ namespace GongFuTimerCSharp
 
                         //Reset last frame time
                         lastFrameTime = DateTime.Now;
-
-                        //Process any UI events if needed
-                        if(appDispatcher.ShouldYield())
-                        {
-                            appDispatcher.ProcessEvents(Windows.UI.Core.CoreProcessEventsOption.ProcessAllIfPresent);
-                        }
+                    }
+                    //Process any UI events if needed
+                    else if (appDispatcher.ShouldYield())
+                    {
+                        appDispatcher.ProcessEvents(Windows.UI.Core.CoreProcessEventsOption.ProcessAllIfPresent);
+                    }
+                    //Wait 10ms if nothing needs to happen
+                    else
+                    {
+                        Task.Delay(10).Wait();
                     }
                 }
             });
