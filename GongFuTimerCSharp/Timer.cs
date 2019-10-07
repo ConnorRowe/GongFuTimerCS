@@ -14,7 +14,6 @@ namespace GongFuTimerCSharp
 
         public Timer()
         {
-
         }
 
         public void Start()

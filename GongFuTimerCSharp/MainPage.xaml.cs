@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.Toolkit.Uwp.UI.Controls;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -59,9 +60,18 @@ namespace GongFuTimerCSharp
             appDispatcher = appWindow.Dispatcher;
 
             appWindow.Activated += AppWindow_Activated;
+            this.Loaded += MainPage_Loaded;
 
             //------------------------------- Main Loop -------------------------------
             MainLoop();
+        }
+
+        //Enumerator
+        public enum AppSection
+        {
+            Timer,
+            Presets,
+            Settings
         }
 
         //Async
@@ -203,6 +213,34 @@ namespace GongFuTimerCSharp
                 teaTimer.Start();
         }
 
+        public void SwitchDisplay(AppSection section)
+        {
+            //get colours
+            SolidColorBrush white = new SolidColorBrush(Windows.UI.Colors.White);
+            SolidColorBrush highlight = (SolidColorBrush)Application.Current.Resources["Highlight"];
+
+            //Reset colours
+            TimerMenu.Foreground = white;
+            LoadPresetMenu.Foreground = white;
+            SettingsMenu.Foreground = white;
+
+            switch (section)
+            {
+                case AppSection.Timer:
+                    GongFuGrid.Visibility = Visibility.Visible;
+                    PresetGrid.Visibility = Visibility.Collapsed;
+                    TimerMenu.Foreground = highlight;
+                    break;
+                case AppSection.Settings:
+                    break;
+                case AppSection.Presets:
+                    GongFuGrid.Visibility = Visibility.Collapsed;
+                    PresetGrid.Visibility = Visibility.Visible;
+                    LoadPresetMenu.Foreground = highlight;
+                    break;
+            }
+        }
+
         //Events
 
         private void Start_Click(object sender, RoutedEventArgs e)
@@ -230,6 +268,67 @@ namespace GongFuTimerCSharp
             {
                 isFocused = true;
             }
+        }
+
+        private void MainPage_Loaded(object sender, RoutedEventArgs e)
+        {
+            presetDataGrid.ItemsSource = Tea.GetTestTeas();
+        }
+
+        private void TimerMenu_Tapped(object sender, TappedRoutedEventArgs e)
+        {
+            SwitchDisplay(AppSection.Timer);
+        }
+
+        private void PresetMenu_Tapped(object sender, TappedRoutedEventArgs e)
+        {
+            SwitchDisplay(AppSection.Presets);
+        }
+    }
+
+    //Tea
+
+    public enum TeaType
+    {
+        White,
+        Green,
+        Matcha,
+        Yellow,
+        Oolong,
+        Black,
+        RawPuerh,
+        Ripened,
+        Tisanes,
+        MedicinalHerbs
+    };
+
+    public class Tea
+    {
+        public String Name { get; set; }
+        public String AltName { get; set; }
+        public TeaType Type { get; set; }
+        public ushort BaseSeconds { get; set; }
+        public ushort PlusSeconds { get; set; }
+        public ushort Temp { get; set; }
+        public ushort MaxInfusions { get; set; }
+
+        public Tea(String name, String altname, TeaType type, ushort baseseconds, ushort plusseconds, ushort temp, ushort maxinfusions)
+        {
+            this.Name = name;
+            this.AltName = altname;
+            this.Type = type;
+            this.BaseSeconds = baseseconds;
+            this.PlusSeconds = plusseconds;
+            this.Temp = temp;
+            this.MaxInfusions = maxinfusions;
+        }
+
+        public static List<Tea> GetTestTeas()
+        {
+            return new List<Tea>(new Tea[2] {
+                new Tea("Souchong Liquour", "Tong Mu Zhengshan Xiaozhong", TeaType.Black, 15, 5, 90, 8),
+                new Tea("Silver Needle", "Bai Hao Yin Zhen", TeaType.White, 45, 10, 90, 5)
+            });
         }
     }
 }

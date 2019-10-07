@@ -5,4 +5,8 @@
     xmlns:local="using:GongFuTimerCSharp"
     RequestedTheme="Dark">
 
+    <Application.Resources>
+        <SolidColorBrush x:Key="Highlight" Color="{ThemeResource SystemAccentColorLight3}"/>
+    </Application.Resources>
+
 </Application>
