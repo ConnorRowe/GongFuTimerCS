@@ -6,9 +6,69 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     mc:Ignorable="d"
-    Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
+    Background="{ThemeResource SystemRevealListLowColor}">
 
-    <Grid>
+    <Canvas>
+        <Grid x:Name="PresetGrid" Visibility="Collapsed">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="650"/>
+            </Grid.ColumnDefinitions>
+        </Grid>
 
-    </Grid>
+
+        <Grid x:Name="GongFuGrid" Visibility="Visible">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="650"/>
+            </Grid.ColumnDefinitions>
+
+            <TextBlock x:Name="debugTextBlock" Text="DEBUG" Grid.Column="1" TextAlignment="Right" Grid.ColumnSpan="2" Margin="0,0,-1,0" VerticalAlignment="Stretch">
+                <TextBlock.Foreground>
+                    <SolidColorBrush Color="{ThemeResource SystemBaseMediumColor}"/>
+                </TextBlock.Foreground>
+            </TextBlock>
+
+            <TextBlock Text="Connor Magson 2019" Grid.Column="1" TextAlignment="Right" VerticalAlignment="Bottom" FontSize="9" Grid.ColumnSpan="2" Margin="0,251,0,0">
+                <TextBlock.Foreground>
+                    <SolidColorBrush Color="{ThemeResource SystemBaseLowColor}"/>
+                </TextBlock.Foreground>
+            </TextBlock>
+
+            <StackPanel x:Name="contentPanel" Margin="120,30,0,0" Grid.ColumnSpan="3" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
+                <TextBlock HorizontalAlignment="Left" Text="GongFu Timer" FontSize="36" />
+
+                <StackPanel x:Name="timeInputPanel" Orientation="Horizontal">
+                    <StackPanel x:Name="baseTimePanel" Padding="0" Margin="0,0,40,0">
+                        <TextBox x:Name="baseSecsTextBox" Text="0" TextAlignment="Center" InputScope="Number" Header="Base Infusion Seconds"/>
+                    </StackPanel>
+                    <StackPanel x:Name="modifierPanel" Margin="0,0,40,0">
+                        <TextBox x:Name="infSecsTextBox" Text="0" TextAlignment="Center" InputScope="Number" Header="+ Infusion Seconds" />
+                    </StackPanel>
+                    <StackPanel x:Name="currentInfusionPanel">
+                        <TextBlock Text="Current Infusion"/>
+                        <Border x:Name="infNumBorder" BorderThickness="2,2,2,2" VerticalAlignment="Stretch" Margin="0,4,0,0" Background="#7F000000">
+                            <Border.BorderBrush>
+                                <SolidColorBrush Color="#66FFFFFF"/>
+                            </Border.BorderBrush>
+                            <TextBlock x:Name="infNumText" Text="0" HorizontalAlignment="Center" VerticalAlignment="Stretch" Margin="0,4.25,0,4.25"/>
+                        </Border>
+                    </StackPanel>
+                </StackPanel>
+                <StackPanel x:Name="inputPanel" Orientation="Horizontal" Margin="0,20,0,20">
+                    <StackPanel x:Name="timerPanel" Orientation="Horizontal" HorizontalAlignment="Center" BorderBrush="#66FFFFFF" BorderThickness="4,4,4,4" Height="90" Width="238" Background="#7F000000">
+                        <TextBlock x:Name="minuteText" Text="00" Style="{ThemeResource HeaderTextBlockStyle}" Margin="10,0,10,0" VerticalAlignment="Center" Width="52"/>
+                        <TextBlock Text=":" Style="{ThemeResource HeaderTextBlockStyle}" Margin="0,0,10,0" VerticalAlignment="Center"/>
+                        <TextBlock x:Name="secondText" Text="00" Style="{ThemeResource HeaderTextBlockStyle}" Margin="0,0,10,0" VerticalAlignment="Center" Width="52"/>
+                        <TextBlock Text=":" Style="{ThemeResource HeaderTextBlockStyle}" Margin="0,0,10,0" VerticalAlignment="Center"/>
+                        <TextBlock x:Name="millisecondText" Text="00" Style="{ThemeResource HeaderTextBlockStyle}" VerticalAlignment="Center" Width="52"/>
+                    </StackPanel>
+                    <StackPanel x:Name="buttonPanel" Orientation="Horizontal">
+                        <!--  Buttons  -->
+                        <Button x:Name="startButton" Content="Start" Margin="20,0,0,0" Click="Start_Click"/>
+                        <Button x:Name="resetButton" Content="Reset" Margin="20,0,0,0" Click="Reset_Click"/>
+                    </StackPanel>
+                </StackPanel>
+            </StackPanel>
+        </Grid>
+
+    </Canvas>
 </Page>
