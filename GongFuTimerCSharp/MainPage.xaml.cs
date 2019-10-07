@@ -68,7 +68,6 @@ namespace GongFuTimerCSharp
         public async void LoadAlarmFile()
         {
             StorageFolder folder = Windows.ApplicationModel.Package.Current.InstalledLocation;
-            //folder = await folder.GetFolderAsync("Assets");
             StorageFile sf = await folder.GetFileAsync("Assets\\Alarm.wav");
             Stream st = await sf.OpenStreamForReadAsync();
             alarmSound.AutoPlay = false;

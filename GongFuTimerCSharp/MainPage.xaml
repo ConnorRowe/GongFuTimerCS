@@ -15,19 +15,18 @@
             </Grid.ColumnDefinitions>
         </Grid>
 
-
         <Grid x:Name="GongFuGrid" Visibility="Visible">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="650"/>
             </Grid.ColumnDefinitions>
 
-            <TextBlock x:Name="debugTextBlock" Text="DEBUG" Grid.Column="1" TextAlignment="Right" Grid.ColumnSpan="2" Margin="0,0,-1,0" VerticalAlignment="Stretch">
+            <TextBlock x:Name="debugTextBlock" Text="DEBUG" TextAlignment="Right" VerticalAlignment="Stretch" HorizontalAlignment="Stretch">
                 <TextBlock.Foreground>
                     <SolidColorBrush Color="{ThemeResource SystemBaseMediumColor}"/>
                 </TextBlock.Foreground>
             </TextBlock>
 
-            <TextBlock Text="Connor Magson 2019" Grid.Column="1" TextAlignment="Right" VerticalAlignment="Bottom" FontSize="9" Grid.ColumnSpan="2" Margin="0,251,0,0">
+            <TextBlock Text="Connor Magson 2019" HorizontalAlignment="Right" VerticalAlignment="Bottom" FontSize="9">
                 <TextBlock.Foreground>
                     <SolidColorBrush Color="{ThemeResource SystemBaseLowColor}"/>
                 </TextBlock.Foreground>
