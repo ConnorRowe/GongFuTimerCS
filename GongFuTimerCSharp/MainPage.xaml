@@ -23,6 +23,12 @@
             <controls:MenuItem x:Name="SettingsMenu" Header="Settings"/>
         </controls:Menu>
         <Canvas>
+            <TextBlock x:Name="debugTextBlock" Text="DEBUG">
+                <TextBlock.Foreground>
+                    <SolidColorBrush Color="{ThemeResource SystemBaseMediumColor}"/>
+                </TextBlock.Foreground>
+            </TextBlock>
+
             <!--Load Preset Menu-->
             <Grid x:Name="PresetGrid" Visibility="Collapsed">
                 <Grid.ColumnDefinitions>
@@ -31,9 +37,10 @@
                 <StackPanel>
                     <controls:DataGrid x:Name="presetDataGrid"
                                    Height="200" Margin="12,12,12,8"
-                                   AutoGenerateColumns="True"/>
+                                   AutoGenerateColumns="True"
+                                   IsReadOnly="True"/>
 
-                    <Button x:Name="loadPresetButton" Content="Load Preset" Margin="12,0,0,8" />
+                    <Button x:Name="loadPresetButton" Content="Load Preset" Margin="12,0,0,8" Click="LoadPreset_Click" />
                 </StackPanel>
             </Grid>
 
@@ -42,12 +49,6 @@
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="650"/>
                 </Grid.ColumnDefinitions>
-
-                <TextBlock x:Name="debugTextBlock" Text="DEBUG" TextAlignment="Right" VerticalAlignment="Top" HorizontalAlignment="Right">
-                    <TextBlock.Foreground>
-                        <SolidColorBrush Color="{ThemeResource SystemBaseMediumColor}"/>
-                    </TextBlock.Foreground>
-                </TextBlock>
 
                 <TextBlock Text="Connor Magson 2019" HorizontalAlignment="Right" VerticalAlignment="Bottom" FontSize="9">
                     <TextBlock.Foreground>

@@ -241,6 +241,12 @@ namespace GongFuTimerCSharp
             }
         }
 
+        public void ApplyTea(Tea tea)
+        {
+            baseSecsTextBox.Text = tea.BaseSeconds.ToString();
+            infSecsTextBox.Text = tea.PlusSeconds.ToString();
+        }
+
         //Events
 
         private void Start_Click(object sender, RoutedEventArgs e)
@@ -283,6 +289,11 @@ namespace GongFuTimerCSharp
         private void PresetMenu_Tapped(object sender, TappedRoutedEventArgs e)
         {
             SwitchDisplay(AppSection.Presets);
+        }
+
+        private void LoadPreset_Click(object sender, RoutedEventArgs e)
+        {
+            ApplyTea((Tea)presetDataGrid.SelectedItem);
         }
     }
 
