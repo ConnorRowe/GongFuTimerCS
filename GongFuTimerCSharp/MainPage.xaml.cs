@@ -1,4 +1,5 @@
 ﻿using Microsoft.Toolkit.Uwp.UI.Controls;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -43,6 +44,9 @@ namespace GongFuTimerCSharp
         //Debug
         String debugText = "";
 
+        //Tea presets
+        PresetCollection presets = new PresetCollection();
+
         public MainPage()
         {
             this.InitializeComponent();
@@ -54,6 +58,8 @@ namespace GongFuTimerCSharp
 
             //Load alarmSound from file
             LoadAlarmFile();
+
+            LoadPresetsFromFile();
 
             //Get dispatcher for main loop
             Windows.UI.Core.CoreWindow appWindow = Windows.UI.Core.CoreWindow.GetForCurrentThread();
@@ -75,6 +81,7 @@ namespace GongFuTimerCSharp
         }
 
         //Async
+
         public async void LoadAlarmFile()
         {
             StorageFolder folder = Windows.ApplicationModel.Package.Current.InstalledLocation;
@@ -82,6 +89,59 @@ namespace GongFuTimerCSharp
             Stream st = await sf.OpenStreamForReadAsync();
             alarmSound.AutoPlay = false;
             alarmSound.SetSource(st.AsRandomAccessStream(), sf.ContentType);
+        }
+
+        public async void LoadPresetsFromFile()
+        {
+            //Get the file path in appdata/local
+            StorageFile file = null;
+            String path = System.IO.Directory.CreateDirectory(ApplicationData.Current.LocalFolder.Path + "\\GongFuTimer\\").ToString();
+            StorageFolder jFolder = await StorageFolder.GetFolderFromPathAsync(path);
+
+            //check if it exists or not
+            if (System.IO.File.Exists(path + "presets.json"))
+            {
+                file = await jFolder.GetFileAsync("presets.json");
+            }
+            else
+            {
+                file = await jFolder.CreateFileAsync("presets.json");
+            }
+
+            //Read from the file
+            String json = await FileIO.ReadTextAsync(file);
+
+            //Convert from JSON to PresetCollection
+            presets = JsonConvert.DeserializeObject<PresetCollection>(json);
+
+            //validate presets, setting it if the file was completely blank
+            if (presets == null)
+            {
+                presets = new PresetCollection();
+            }
+
+            presetDataGrid.ItemsSource = presets.Presets;
+        }
+
+        public async void SavePresetsToFile()
+        {
+            StorageFile file;
+            String path = System.IO.Directory.CreateDirectory(ApplicationData.Current.LocalFolder.Path + "\\GongFuTimer\\").ToString();
+            StorageFolder jFolder = await StorageFolder.GetFolderFromPathAsync(path);
+
+            if (System.IO.File.Exists(path + "presets.json"))
+            {
+                file = await jFolder.GetFileAsync("presets.json");
+            }
+            else
+            {
+                file = await jFolder.CreateFileAsync("presets.json");
+            }
+
+            String json = JsonConvert.SerializeObject(presets, Formatting.Indented);
+
+            //Write the PresetCollection data to the file
+            await FileIO.WriteTextAsync(file, json);
         }
 
         public async void MainLoop()
@@ -110,10 +170,10 @@ namespace GongFuTimerCSharp
                     {
                         appDispatcher.ProcessEvents(Windows.UI.Core.CoreProcessEventsOption.ProcessAllIfPresent);
                     }
-                    //Wait 10ms if nothing needs to happen
+                    //Wait 4ms if nothing needs to happen
                     else
                     {
-                        Task.Delay(10).Wait();
+                        Task.Delay(4).Wait();
                     }
                 }
             });
@@ -147,7 +207,7 @@ namespace GongFuTimerCSharp
         public void Update()
         {
             //Only check for input if the window is focussed
-            if (isFocused)
+            if (isFocused && GongFuGrid.Visibility == Visibility.Visible)
             {
                 //Check for enter pressed
                 if (Window.Current.CoreWindow.GetKeyState(Windows.System.VirtualKey.Enter).HasFlag(Windows.UI.Core.CoreVirtualKeyStates.Down))
@@ -245,6 +305,17 @@ namespace GongFuTimerCSharp
         {
             baseSecsTextBox.Text = tea.BaseSeconds.ToString();
             infSecsTextBox.Text = tea.PlusSeconds.ToString();
+            ResetTimer();
+        }
+
+        public void ResetTimer()
+        {
+            teaTimer.Clear();
+            infNumber = 0;
+            alarmSound.Stop();
+            infNumText.Text = "0";
+            //Also reset startbutton text
+            startButton.Content = "Start";
         }
 
         //Events
@@ -256,12 +327,7 @@ namespace GongFuTimerCSharp
 
         private void Reset_Click(object sender, RoutedEventArgs e)
         {
-            teaTimer.Clear();
-            infNumber = 0;
-            alarmSound.Stop();
-            infNumText.Text = "0";
-            //Also reset startbutton text
-            startButton.Content = "Start";
+            ResetTimer();
         }
 
         private void AppWindow_Activated(Windows.UI.Core.CoreWindow sender, Windows.UI.Core.WindowActivatedEventArgs args)
@@ -278,7 +344,14 @@ namespace GongFuTimerCSharp
 
         private void MainPage_Loaded(object sender, RoutedEventArgs e)
         {
-            presetDataGrid.ItemsSource = Tea.GetTestTeas();
+            //Find the tea type combobox column and set its enum type
+            foreach (DataGridColumn column in presetDataGrid.Columns)
+            {
+                if (column.Tag.ToString() == "Type")
+                {
+                    (column as DataGridComboBoxColumn).ItemsSource = Enum.GetValues(typeof(TeaType)).Cast<TeaType>();
+                }
+            }
         }
 
         private void TimerMenu_Tapped(object sender, TappedRoutedEventArgs e)
@@ -293,7 +366,100 @@ namespace GongFuTimerCSharp
 
         private void LoadPreset_Click(object sender, RoutedEventArgs e)
         {
-            ApplyTea((Tea)presetDataGrid.SelectedItem);
+            if (presetDataGrid.SelectedItem != null)
+            {
+                ApplyTea((Tea)presetDataGrid.SelectedItem);
+                SwitchDisplay(AppSection.Timer);
+            }
+        }
+
+        //DataGrid sorting stuff
+        private void presetDataGrid_Sort(object sender, DataGridColumnEventArgs e)
+        {
+            if(e.Column.SortDirection == null || e.Column.SortDirection == DataGridSortDirection.Ascending)
+            {
+                //Use the Tag property to pass the bound column name for the sorting implementation
+                if(e.Column.Tag.ToString() == "Name")
+                {
+
+                    //Implement ascending sort on the column "Range" using LINQ
+                    presetDataGrid.ItemsSource = new System.Collections.ObjectModel.ObservableCollection<Tea>(from preset in presets.Presets
+                                                                        orderby preset.Name descending
+                                                                        select preset);
+                }
+                if (e.Column.Tag.ToString() == "Type")
+                {
+                    presetDataGrid.ItemsSource = new System.Collections.ObjectModel.ObservableCollection<Tea>(from preset in presets.Presets orderby preset.Type descending select preset);
+                }
+                if (e.Column.Tag.ToString() == "BaseSeconds")
+                {
+                    presetDataGrid.ItemsSource = new System.Collections.ObjectModel.ObservableCollection<Tea>(from preset in presets.Presets orderby preset.BaseSeconds descending select preset);
+                }
+                if (e.Column.Tag.ToString() == "PlusSeconds")
+                {
+                    presetDataGrid.ItemsSource = new System.Collections.ObjectModel.ObservableCollection<Tea>(from preset in presets.Presets orderby preset.PlusSeconds descending select preset);
+                }
+                if (e.Column.Tag.ToString() == "Temp")
+                {
+                    presetDataGrid.ItemsSource = new System.Collections.ObjectModel.ObservableCollection<Tea>(from preset in presets.Presets orderby preset.Temp descending select preset);
+                }
+                e.Column.SortDirection = DataGridSortDirection.Descending;
+
+                if (e.Column.Tag.ToString() == "AltName")
+                {
+                    e.Column.SortDirection = null;
+                }
+
+                //Reset all other columns
+                foreach(DataGridColumn column in (sender as DataGrid).Columns)
+                {
+                    if (column.Tag != e.Column.Tag)
+                        column.SortDirection = null;
+                }
+            }
+            else if (e.Column.SortDirection == DataGridSortDirection.Descending)
+            {
+                if (e.Column.Tag.ToString() == "Name")
+                {
+                    presetDataGrid.ItemsSource = new System.Collections.ObjectModel.ObservableCollection<Tea>(from preset in presets.Presets orderby preset.Name ascending select preset);
+                }
+                if (e.Column.Tag.ToString() == "Type")
+                {
+                    presetDataGrid.ItemsSource = new System.Collections.ObjectModel.ObservableCollection<Tea>(from preset in presets.Presets orderby preset.Type ascending select preset);
+                }
+                if (e.Column.Tag.ToString() == "BaseSeconds")
+                {
+                    presetDataGrid.ItemsSource = new System.Collections.ObjectModel.ObservableCollection<Tea>(from preset in presets.Presets orderby preset.BaseSeconds ascending select preset);
+                }
+                if (e.Column.Tag.ToString() == "PlusSeconds")
+                {
+                    presetDataGrid.ItemsSource = new System.Collections.ObjectModel.ObservableCollection<Tea>(from preset in presets.Presets orderby preset.PlusSeconds ascending select preset);
+                }
+                if (e.Column.Tag.ToString() == "Temp")
+                {
+                    presetDataGrid.ItemsSource = new System.Collections.ObjectModel.ObservableCollection<Tea>(from preset in presets.Presets orderby preset.Temp ascending select preset);
+                }
+                e.Column.SortDirection = DataGridSortDirection.Ascending;
+            }
+        }
+
+        //Adding a new tea preset
+        private void NewPresetButton_Click(object sender, RoutedEventArgs e)
+        {
+            presets.Presets.Add(new Tea("New", "", 0, 0, 0, 0, 0));
+            presetDataGrid.ItemsSource = new System.Collections.ObjectModel.ObservableCollection<Tea>(presets.Presets);
+        }
+
+        private void SavePresetButton_Click(object sender, RoutedEventArgs e)
+        {
+            SavePresetsToFile();
+        }
+
+        //Delete the selected tea preset
+        private void DeletePresetButton_Click(object sender, RoutedEventArgs e)
+        {
+            presets.Presets.Remove((Tea)presetDataGrid.SelectedItem);
+            presetDataGrid.ItemsSource = new System.Collections.ObjectModel.ObservableCollection<Tea>(presets.Presets);
         }
     }
 
@@ -334,12 +500,28 @@ namespace GongFuTimerCSharp
             this.MaxInfusions = maxinfusions;
         }
 
-        public static List<Tea> GetTestTeas()
+        public static PresetCollection GetTestTeas()
         {
-            return new List<Tea>(new Tea[2] {
+            return new PresetCollection(new List<Tea>(new Tea[2] {
                 new Tea("Souchong Liquour", "Tong Mu Zhengshan Xiaozhong", TeaType.Black, 15, 5, 90, 8),
                 new Tea("Silver Needle", "Bai Hao Yin Zhen", TeaType.White, 45, 10, 90, 5)
-            });
+            }));
+        }
+
+    }
+
+    public class PresetCollection
+    {
+        public List<Tea> Presets { get; set; }
+
+        public PresetCollection(List<Tea> presets)
+        {
+            Presets = presets;
+        }
+
+        public PresetCollection()
+        {
+            Presets = new List<Tea>();
         }
     }
 }

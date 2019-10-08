@@ -8,7 +8,9 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     mc:Ignorable="d"
     Background="{ThemeResource SystemRevealListLowColor}">
-
+    <Page.Resources>
+        
+    </Page.Resources>
     <StackPanel>
         <controls:Menu>
             <controls:Menu.Background>
@@ -37,10 +39,38 @@
                 <StackPanel>
                     <controls:DataGrid x:Name="presetDataGrid"
                                    Height="200" Margin="12,12,12,8"
-                                   AutoGenerateColumns="True"
-                                   IsReadOnly="True"/>
-
-                    <Button x:Name="loadPresetButton" Content="Load Preset" Margin="12,0,0,8" Click="LoadPreset_Click" />
+                                   AutoGenerateColumns="False"
+                                   IsReadOnly="False"
+                                   CanUserSortColumns="True" Sorting="presetDataGrid_Sort"
+                                   GridLinesVisibility="Vertical">
+                        <controls:DataGrid.RowBackground>
+                            <SolidColorBrush Color="{ThemeResource SystemChromeBlackMediumColor}"/>
+                        </controls:DataGrid.RowBackground>
+                        <controls:DataGrid.AlternatingRowBackground>
+                            <SolidColorBrush Color="{ThemeResource SystemRevealChromeBlackLowColor}"/>
+                        </controls:DataGrid.AlternatingRowBackground>
+                        <controls:DataGrid.Columns>
+                            <controls:DataGridTextColumn Header="Name" Binding="{Binding Name}" Tag="Name"/>
+                            <controls:DataGridComboBoxColumn Header="Type" Binding="{Binding Type}" Tag="Type"/>
+                            <controls:DataGridTextColumn Header="Base Secs" Binding="{Binding BaseSeconds}" Tag="BaseSeconds"/>
+                            <controls:DataGridTextColumn Header="+ Secs" Binding="{Binding PlusSeconds}" Tag="PlusSeconds"/>
+                            <controls:DataGridTextColumn Header="Temp °C" Binding="{Binding Temp}" Tag="Temp"/>
+                            <controls:DataGridTextColumn Header="Alternate Name" Binding="{Binding AltName}" Tag="AltName"/>
+                        </controls:DataGrid.Columns>
+                    </controls:DataGrid>
+                    <StackPanel Orientation="Horizontal">
+                        <Button x:Name="loadPresetButton" Content="Load Preset" Margin="12,0,0,8" Click="LoadPreset_Click" />
+                        <Button x:Name="newPresetButton" Content="New" Margin="12,0,0,8" Click="NewPresetButton_Click"/>
+                        <Button x:Name="savePresetButton" Content="Save" Margin="12,0,0,8" Click="SavePresetButton_Click"/>
+                        <DropDownButton x:Name="deletePresetButton" Content="Delete" Margin="12,0,0,8">
+                            <DropDownButton.Flyout>
+                                <MenuFlyout Placement="TopEdgeAlignedLeft">
+                                    <MenuFlyoutItem Text="Yes" Click="DeletePresetButton_Click"/>
+                                    <MenuFlyoutItem Text="No"/>
+                                </MenuFlyout>
+                            </DropDownButton.Flyout>
+                        </DropDownButton>
+                    </StackPanel>
                 </StackPanel>
             </Grid>
 
