@@ -7,6 +7,42 @@
 
     <Application.Resources>
         <SolidColorBrush x:Key="Highlight" Color="{ThemeResource SystemAccentColorLight3}"/>
+        <SolidColorBrush x:Key="Lowlight" Color="{ThemeResource SystemAccentColorDark3}"/>
+        <SolidColorBrush x:Key="DefaultCell" Color="#00cde1db"/>
+        <!--Tea Highlights-->
+        <!--Light theme-->
+        <SolidColorBrush x:Key="WhiteHighlightDark" Color="#cde1db"/>
+        <SolidColorBrush x:Key="GreenHighlightDark" Color="#59914f"/>
+        <SolidColorBrush x:Key="MatchaHighlightDark" Color="#057400"/>
+        <SolidColorBrush x:Key="YellowHighlightDark" Color="#fed25a"/>
+        <SolidColorBrush x:Key="OolongHighlightDark" Color="#3b4272"/>
+        <SolidColorBrush x:Key="BlackHighlightDark" Color="#ac0000"/>
+        <SolidColorBrush x:Key="RawPuerhHighlightDark" Color="#008487"/>
+        <SolidColorBrush x:Key="RipenedHighlightDark" Color="#5a2213"/>
+        <SolidColorBrush x:Key="TisanesHighlightDark" Color="#fcdcd8"/>
+        <SolidColorBrush x:Key="MedicinalHighlightDark" Color="#f36e21"/>
+        <!--Dark theme-->
+        <SolidColorBrush x:Key="WhiteHighlightLight" Color="#38e1ae"/>
+        <SolidColorBrush x:Key="GreenHighlightLight" Color="#59914f"/>
+        <SolidColorBrush x:Key="MatchaHighlightLight" Color="#057400"/>
+        <SolidColorBrush x:Key="YellowHighlightLight" Color="#febe10"/>
+        <SolidColorBrush x:Key="OolongHighlightLight" Color="#3b4272"/>
+        <SolidColorBrush x:Key="BlackHighlightLight" Color="#000201"/>
+        <SolidColorBrush x:Key="RawPuerhHighlightLight" Color="#008487"/>
+        <SolidColorBrush x:Key="RipenedHighlightLight" Color="#5a2213"/>
+        <SolidColorBrush x:Key="TisanesHighlightLight" Color="#da412e"/>
+        <SolidColorBrush x:Key="MedicinalHighlightLight" Color="#f36e21"/>
+        <!--Tea Lowlights-->
+        <SolidColorBrush x:Key="WhiteLowlight" Color="#9aa9a4"/>
+        <SolidColorBrush x:Key="GreenLowlight" Color="#436d3b"/>
+        <SolidColorBrush x:Key="MatchaLowlight" Color="#045700"/>
+        <SolidColorBrush x:Key="YellowLowlight" Color="#be9d43"/>
+        <SolidColorBrush x:Key="OolongLowlight" Color="#2c3155"/>
+        <SolidColorBrush x:Key="BlackLowlight" Color="#810000"/>
+        <SolidColorBrush x:Key="RawPuerhLowlight" Color="#006365"/>
+        <SolidColorBrush x:Key="RipenedLowlight" Color="#43190e"/>
+        <SolidColorBrush x:Key="TisanesLowlight" Color="#bda5a2"/>
+        <SolidColorBrush x:Key="MedicinalLowlight" Color="#b65219"/>
     </Application.Resources>
 
 </Application>

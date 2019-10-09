@@ -47,18 +47,32 @@ namespace GongFuTimerCSharp
         //Tea presets
         PresetCollection presets = new PresetCollection();
 
+        //Settings
+        public bool isHighlightsTea = true;
+
+        //Appearance
+        public Tea activeTea;
+        public SolidColorBrush highlight;
+        public SolidColorBrush lowlight;
+        public String teaInfo;
+        public List<DataGridRow> presetRows;
+
         public MainPage()
         {
             this.InitializeComponent();
             teaTimer = new Timer();
             alarmSound = new MediaElement();
+            activeTea = new Tea("", "", 0, 0, 0, 0, 0);
+            highlight = (SolidColorBrush)Application.Current.Resources["Highlight"];
+            lowlight = (SolidColorBrush)Application.Current.Resources["Lowlight"];
+            teaInfo = "";
+            presetRows = new List<DataGridRow>();
 
             //Init timer so it displays at 0 seconds at the start
             teaTimer.Clear();
 
-            //Load alarmSound from file
+            //Load stuff from files
             LoadAlarmFile();
-
             LoadPresetsFromFile();
 
             //Get dispatcher for main loop
@@ -68,6 +82,7 @@ namespace GongFuTimerCSharp
             appWindow.Activated += AppWindow_Activated;
             this.Loaded += MainPage_Loaded;
 
+            SwitchDisplay(AppSection.Timer);
             //------------------------------- Main Loop -------------------------------
             MainLoop();
         }
@@ -202,6 +217,62 @@ namespace GongFuTimerCSharp
             return formattedStr;
         }
 
+        public String FormatTeaType(TeaType type)
+        {
+            String formatted;
+            switch(type)
+            {
+                case TeaType.MedicinalHerbs:
+                    formatted = "Medicinal Herbs";
+                    break;
+                case TeaType.RawPuerh:
+                    formatted = "Raw Puerh";
+                    break;
+                default:
+                    formatted = type.ToString();
+                    break;
+            }
+            return formatted;
+        }
+
+        public String FormatTeaInfo()
+        {
+            String info = "";
+
+            if (activeTea != null)
+            {
+                info = activeTea.Name + " - " + FormatTeaType(activeTea.Type) + ", brew at " + activeTea.Temp.ToString() + "°C" + " for " + activeTea.MaxInfusions.ToString() + " infusions.";
+            }
+
+            return info;
+        }
+
+        public void HighlightDataGridRow(String teaname)
+        {
+            foreach (var row in presetRows)
+            {
+                //set the correct row's colour
+                if ((row.DataContext as Tea).Name == teaname)
+                {
+                    foreach (var colItem in presetDataGrid.Columns)
+                    {
+                        DataGridCell cell = ((DataGridCell)colItem.GetCellContent(row).Parent);
+                        cell.Background = lowlight;
+                    }
+                }
+                //Reset other rows
+                else
+                {
+                    foreach (var colItem in presetDataGrid.Columns)
+                    {
+                        DataGridCell cell = ((DataGridCell)colItem.GetCellContent(row).Parent);
+                        if (cell != null)
+                            cell.Background = (SolidColorBrush)Application.Current.Resources["DefaultCell"];
+                    }
+                }
+            }
+        }
+
         //Main functions
 
         public void Update()
@@ -275,28 +346,30 @@ namespace GongFuTimerCSharp
 
         public void SwitchDisplay(AppSection section)
         {
-            //get colours
-            SolidColorBrush white = new SolidColorBrush(Windows.UI.Colors.White);
-            SolidColorBrush highlight = (SolidColorBrush)Application.Current.Resources["Highlight"];
-
             //Reset colours
-            TimerMenu.Foreground = white;
-            LoadPresetMenu.Foreground = white;
-            SettingsMenu.Foreground = white;
+            TimerMenu.BorderBrush = null;
+            LoadPresetMenu.BorderBrush = null;
+            SettingsMenu.BorderBrush = null;
 
             switch (section)
             {
                 case AppSection.Timer:
                     GongFuGrid.Visibility = Visibility.Visible;
                     PresetGrid.Visibility = Visibility.Collapsed;
-                    TimerMenu.Foreground = highlight;
+                    SettingsGrid.Visibility = Visibility.Collapsed;
+                    TimerMenu.BorderBrush = highlight;
                     break;
                 case AppSection.Settings:
+                    GongFuGrid.Visibility = Visibility.Collapsed;
+                    PresetGrid.Visibility = Visibility.Collapsed;
+                    SettingsGrid.Visibility = Visibility.Visible;
+                    SettingsMenu.BorderBrush = highlight;
                     break;
                 case AppSection.Presets:
                     GongFuGrid.Visibility = Visibility.Collapsed;
                     PresetGrid.Visibility = Visibility.Visible;
-                    LoadPresetMenu.Foreground = highlight;
+                    SettingsGrid.Visibility = Visibility.Collapsed;
+                    LoadPresetMenu.BorderBrush = highlight;
                     break;
             }
         }
@@ -306,6 +379,19 @@ namespace GongFuTimerCSharp
             baseSecsTextBox.Text = tea.BaseSeconds.ToString();
             infSecsTextBox.Text = tea.PlusSeconds.ToString();
             ResetTimer();
+            activeTea = tea;
+            teaInfo = FormatTeaInfo();
+            if (isHighlightsTea)
+            {
+                String highlightName = activeTea.Type.ToString() + "HighlightDark";
+                highlight = (SolidColorBrush)Application.Current.Resources[highlightName];
+
+                highlightName = activeTea.Type.ToString() + "Lowlight";
+                lowlight = (SolidColorBrush)Application.Current.Resources[highlightName];
+            }
+            HighlightDataGridRow(activeTea.Name);
+
+            this.Bindings.Update();
         }
 
         public void ResetTimer()
@@ -364,6 +450,11 @@ namespace GongFuTimerCSharp
             SwitchDisplay(AppSection.Presets);
         }
 
+        private void SettingsMenu_Tapped(object sender, TappedRoutedEventArgs e)
+        {
+            SwitchDisplay(AppSection.Settings);
+        }
+
         private void LoadPreset_Click(object sender, RoutedEventArgs e)
         {
             if (presetDataGrid.SelectedItem != null)
@@ -403,6 +494,10 @@ namespace GongFuTimerCSharp
                 {
                     presetDataGrid.ItemsSource = new System.Collections.ObjectModel.ObservableCollection<Tea>(from preset in presets.Presets orderby preset.Temp descending select preset);
                 }
+                if (e.Column.Tag.ToString() == "MaxInfusions")
+                {
+                    presetDataGrid.ItemsSource = new System.Collections.ObjectModel.ObservableCollection<Tea>(from preset in presets.Presets orderby preset.MaxInfusions descending select preset);
+                }
                 e.Column.SortDirection = DataGridSortDirection.Descending;
 
                 if (e.Column.Tag.ToString() == "AltName")
@@ -439,6 +534,10 @@ namespace GongFuTimerCSharp
                 {
                     presetDataGrid.ItemsSource = new System.Collections.ObjectModel.ObservableCollection<Tea>(from preset in presets.Presets orderby preset.Temp ascending select preset);
                 }
+                if (e.Column.Tag.ToString() == "MaxInfusions")
+                {
+                    presetDataGrid.ItemsSource = new System.Collections.ObjectModel.ObservableCollection<Tea>(from preset in presets.Presets orderby preset.MaxInfusions ascending select preset);
+                }
                 e.Column.SortDirection = DataGridSortDirection.Ascending;
             }
         }
@@ -460,6 +559,68 @@ namespace GongFuTimerCSharp
         {
             presets.Presets.Remove((Tea)presetDataGrid.SelectedItem);
             presetDataGrid.ItemsSource = new System.Collections.ObjectModel.ObservableCollection<Tea>(presets.Presets);
+        }
+
+        private void TeaHighlights_Toggled(object sender, RoutedEventArgs e)
+        {
+            if((sender as ToggleSwitch).IsOn)
+            {
+                isHighlightsTea = true;
+                if(activeTea != null)
+                {
+                    String highlightName = activeTea.Type.ToString() + "HighlightDark";
+                    highlight = (SolidColorBrush)Application.Current.Resources[highlightName];
+                }
+            }
+            else
+            {
+                isHighlightsTea = false;
+                highlight = (SolidColorBrush)Application.Current.Resources["Highlight"];
+            }
+        }
+
+        private void presetDataGrid_SelectRow(object sender, SelectionChangedEventArgs e)
+        {
+            //if something was actually added to the selection
+            if(e.AddedItems.Count > 0)
+            {
+                String teaName = ((Tea)e.AddedItems.ElementAt(0)).Name;
+                //Find row
+                HighlightDataGridRow(teaName);
+            }
+        }
+
+        private void PresetDataGrid_LoadingRow(object sender, DataGridRowEventArgs e)
+        {
+            //Check if the row already exists in the list
+            bool isRowFound = false;
+            foreach(var row in presetRows)
+            {
+                if((row.DataContext as Tea).Name == (e.Row.DataContext as Tea).Name)
+                {
+                    isRowFound = true;
+                    break;
+                }
+            }
+
+            //If it doesn't exist then add it
+            if(!isRowFound)
+            {
+                presetRows.Add(e.Row);
+            }
+        }
+
+        private void PresetDataGrid_UnloadingRow(object sender, DataGridRowEventArgs e)
+        {
+            //Find the row that got removed and remove it from the list
+            foreach (var row in presetRows)
+            {
+                if ((row.DataContext as Tea).Name == (e.Row.DataContext as Tea).Name)
+                {
+                    presetRows.Remove(row);
+                    break;
+                }
+            }
         }
     }
 

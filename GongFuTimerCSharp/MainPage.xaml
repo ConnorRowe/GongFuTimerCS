@@ -9,20 +9,15 @@
     mc:Ignorable="d"
     Background="{ThemeResource SystemRevealListLowColor}">
     <Page.Resources>
-        
     </Page.Resources>
     <StackPanel>
         <controls:Menu>
             <controls:Menu.Background>
                 <SolidColorBrush Color="{ThemeResource SystemRevealChromeBlackLowColor}"/>
             </controls:Menu.Background>
-            <controls:MenuItem x:Name="TimerMenu" Header="Timer" Tapped="TimerMenu_Tapped">
-                <controls:MenuItem.Foreground>
-                    <SolidColorBrush Color="{ThemeResource SystemAccentColorLight3}"/>
-                </controls:MenuItem.Foreground>
-            </controls:MenuItem>
-            <controls:MenuItem x:Name="LoadPresetMenu" Header="Presets" Tapped="PresetMenu_Tapped"/>
-            <controls:MenuItem x:Name="SettingsMenu" Header="Settings"/>
+            <controls:MenuItem x:Name="TimerMenu" Header="Timer" Tapped="TimerMenu_Tapped" BorderBrush="{x:Null}" BorderThickness="0,0,0,4"/>
+            <controls:MenuItem x:Name="LoadPresetMenu" Header="Presets" Tapped="PresetMenu_Tapped" BorderThickness="0,0,0,4"/>
+            <controls:MenuItem x:Name="SettingsMenu" Header="Settings" BorderThickness="0,0,0,4" Tapped="SettingsMenu_Tapped"/>
         </controls:Menu>
         <Canvas>
             <TextBlock x:Name="debugTextBlock" Text="DEBUG">
@@ -30,6 +25,20 @@
                     <SolidColorBrush Color="{ThemeResource SystemBaseMediumColor}"/>
                 </TextBlock.Foreground>
             </TextBlock>
+            
+            <!--Settings Menu-->
+            <Grid x:Name="SettingsGrid" Visibility="Collapsed" HorizontalAlignment="Stretch" Height="300" Margin="0,0,0,0" VerticalAlignment="Stretch">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="324"/>
+                    <ColumnDefinition Width="324"/>
+                </Grid.ColumnDefinitions>
+                <StackPanel Grid.Column="0" HorizontalAlignment="Center">
+                    <ToggleSwitch x:Name="TeaHighlightSwitch" OnContent="Tea Colours" OffContent="System" Header="Highlights" VerticalAlignment="Center" Margin="0,8,0,0" IsOn="True" FontSize="12" Toggled="TeaHighlights_Toggled"/>
+                </StackPanel>
+                <StackPanel Grid.Column="1">
+                    
+                </StackPanel>
+            </Grid>
 
             <!--Load Preset Menu-->
             <Grid x:Name="PresetGrid" Visibility="Collapsed">
@@ -42,7 +51,7 @@
                                    AutoGenerateColumns="False"
                                    IsReadOnly="False"
                                    CanUserSortColumns="True" Sorting="presetDataGrid_Sort"
-                                   GridLinesVisibility="Vertical">
+                                   GridLinesVisibility="Vertical" SelectionChanged="presetDataGrid_SelectRow" LoadingRow="PresetDataGrid_LoadingRow" UnloadingRow="PresetDataGrid_UnloadingRow">
                         <controls:DataGrid.RowBackground>
                             <SolidColorBrush Color="{ThemeResource SystemChromeBlackMediumColor}"/>
                         </controls:DataGrid.RowBackground>
@@ -50,11 +59,12 @@
                             <SolidColorBrush Color="{ThemeResource SystemRevealChromeBlackLowColor}"/>
                         </controls:DataGrid.AlternatingRowBackground>
                         <controls:DataGrid.Columns>
-                            <controls:DataGridTextColumn Header="Name" Binding="{Binding Name}" Tag="Name"/>
+                            <controls:DataGridTextColumn x:Name="NameColumn" Header="Name" Binding="{Binding Name}" Tag="Name"/>
                             <controls:DataGridComboBoxColumn Header="Type" Binding="{Binding Type}" Tag="Type"/>
                             <controls:DataGridTextColumn Header="Base Secs" Binding="{Binding BaseSeconds}" Tag="BaseSeconds"/>
                             <controls:DataGridTextColumn Header="+ Secs" Binding="{Binding PlusSeconds}" Tag="PlusSeconds"/>
                             <controls:DataGridTextColumn Header="Temp °C" Binding="{Binding Temp}" Tag="Temp"/>
+                            <controls:DataGridTextColumn Header="Infusions" Binding="{Binding MaxInfusions}" Tag="MaxInfusions"/>
                             <controls:DataGridTextColumn Header="Alternate Name" Binding="{Binding AltName}" Tag="AltName"/>
                         </controls:DataGrid.Columns>
                     </controls:DataGrid>
@@ -86,8 +96,10 @@
                     </TextBlock.Foreground>
                 </TextBlock>
 
-                <StackPanel x:Name="contentPanel" Margin="120,30,0,0" Grid.ColumnSpan="3" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
-                    <TextBlock HorizontalAlignment="Left" Text="GongFu Timer" FontSize="36" />
+                <StackPanel x:Name="contentPanel" Margin="48,4,0,0" Grid.ColumnSpan="3" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
+                    <TextBlock HorizontalAlignment="Left" Text="GongFu Timer" FontSize="28" Foreground="{x:Bind Path=highlight, Mode=OneWay}"/>
+                    <TextBlock Text="{x:Bind Path=teaInfo, Mode=OneWay}" FontSize="16" Foreground="{x:Bind Path=highlight, Mode=OneWay}" Margin="0,4,0,0"/>
+                    <TextBlock x:Name="Subheading" Text="{x:Bind Path=activeTea.AltName, Mode=OneWay}" Foreground="{x:Bind Path=highlight, Mode=OneWay}" FontStyle="Italic" FontSize="12" Margin="0,4,0,8"/>
 
                     <StackPanel x:Name="timeInputPanel" Orientation="Horizontal">
                         <StackPanel x:Name="baseTimePanel" Padding="0" Margin="0,0,40,0">
