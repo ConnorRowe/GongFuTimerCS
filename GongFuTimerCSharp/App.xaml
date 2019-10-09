@@ -20,7 +20,7 @@
         <SolidColorBrush x:Key="RawPuerhHighlightDark" Color="#008487"/>
         <SolidColorBrush x:Key="RipenedHighlightDark" Color="#5a2213"/>
         <SolidColorBrush x:Key="TisanesHighlightDark" Color="#fcdcd8"/>
-        <SolidColorBrush x:Key="MedicinalHighlightDark" Color="#f36e21"/>
+        <SolidColorBrush x:Key="MedicinalHerbsHighlightDark" Color="#f36e21"/>
         <!--Dark theme-->
         <SolidColorBrush x:Key="WhiteHighlightLight" Color="#38e1ae"/>
         <SolidColorBrush x:Key="GreenHighlightLight" Color="#59914f"/>
@@ -31,7 +31,7 @@
         <SolidColorBrush x:Key="RawPuerhHighlightLight" Color="#008487"/>
         <SolidColorBrush x:Key="RipenedHighlightLight" Color="#5a2213"/>
         <SolidColorBrush x:Key="TisanesHighlightLight" Color="#da412e"/>
-        <SolidColorBrush x:Key="MedicinalHighlightLight" Color="#f36e21"/>
+        <SolidColorBrush x:Key="MedicinalHerbsHighlightLight" Color="#f36e21"/>
         <!--Tea Lowlights-->
         <SolidColorBrush x:Key="WhiteLowlight" Color="#9aa9a4"/>
         <SolidColorBrush x:Key="GreenLowlight" Color="#436d3b"/>
@@ -42,7 +42,7 @@
         <SolidColorBrush x:Key="RawPuerhLowlight" Color="#006365"/>
         <SolidColorBrush x:Key="RipenedLowlight" Color="#43190e"/>
         <SolidColorBrush x:Key="TisanesLowlight" Color="#bda5a2"/>
-        <SolidColorBrush x:Key="MedicinalLowlight" Color="#b65219"/>
+        <SolidColorBrush x:Key="MedicinalHerbsLowlight" Color="#b65219"/>
     </Application.Resources>
 
 </Application>
