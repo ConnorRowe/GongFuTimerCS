@@ -10,8 +10,14 @@
     Background="{ThemeResource SystemRevealListLowColor}" Width="Auto" Height="Auto">
     <Page.Resources>
     </Page.Resources>
-    <StackPanel>
-        <controls:Menu>
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="*"/>
+        </Grid.ColumnDefinitions>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+        <controls:Menu x:Name="GongFuMenu" Grid.Row="0">
             <controls:Menu.Background>
                 <SolidColorBrush Color="{ThemeResource SystemRevealChromeBlackLowColor}"/>
             </controls:Menu.Background>
@@ -19,15 +25,18 @@
             <controls:MenuItem x:Name="LoadPresetMenu" Header="Presets" Tapped="PresetMenu_Tapped" BorderThickness="0,0,0,4"/>
             <controls:MenuItem x:Name="SettingsMenu" Header="Settings" BorderThickness="0,0,0,4" Tapped="SettingsMenu_Tapped"/>
         </controls:Menu>
-        <Canvas HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
+        <Grid x:Name="MainPanel" Margin="0,32,0,0">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="*"/>
+            </Grid.RowDefinitions>
             <TextBlock x:Name="debugTextBlock" Text="DEBUG">
                 <TextBlock.Foreground>
                     <SolidColorBrush Color="{ThemeResource SystemBaseMediumColor}"/>
                 </TextBlock.Foreground>
             </TextBlock>
-            
+
             <!--Settings Menu-->
-            <Grid x:Name="SettingsGrid" Visibility="Collapsed" HorizontalAlignment="Stretch" Height="300" Margin="0,0,0,0" VerticalAlignment="Stretch">
+            <Grid x:Name="SettingsGrid" Visibility="Collapsed" MinHeight="300" Margin="0,0,0,0" VerticalAlignment="Stretch">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="324"/>
                     <ColumnDefinition Width="324"/>
@@ -36,53 +45,58 @@
                     <ToggleSwitch x:Name="TeaHighlightSwitch" OnContent="Tea Colours" OffContent="System" Header="Highlights" VerticalAlignment="Center" Margin="0,8,0,0" IsOn="True" FontSize="12" Toggled="TeaHighlights_Toggled"/>
                 </StackPanel>
                 <StackPanel Grid.Column="1">
-                    
+
                 </StackPanel>
             </Grid>
 
             <!--Load Preset Menu-->
             <Grid x:Name="PresetGrid" Visibility="Visible">
                 <Grid.RowDefinitions>
-                    <RowDefinition Height="248"/>
-                    <RowDefinition Height="*"/>
+                    <RowDefinition Height="20*"/>
+                    <RowDefinition Height="auto"/>
                 </Grid.RowDefinitions>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
+
                 <controls:DataGrid x:Name="presetDataGrid"
-                                   Height="200" Margin="12,12,12,8"
+                                   MinHeight="200" Margin="12,12,12,8" Height="Auto" Width="Auto"
+                                   MinWidth="300"
                                    AutoGenerateColumns="False"
                                    IsReadOnly="False"
                                    CanUserSortColumns="True" Sorting="presetDataGrid_Sort"
-                                   
-                                   GridLinesVisibility="Vertical" SelectionChanged="presetDataGrid_SelectRow" LoadingRow="PresetDataGrid_LoadingRow">
-                        <controls:DataGrid.RowBackground>
-                            <SolidColorBrush Color="{ThemeResource SystemChromeBlackMediumColor}"/>
-                        </controls:DataGrid.RowBackground>
-                        <controls:DataGrid.AlternatingRowBackground>
-                            <SolidColorBrush Color="{ThemeResource SystemRevealChromeBlackLowColor}"/>
-                        </controls:DataGrid.AlternatingRowBackground>
-                        <controls:DataGrid.Columns>
-                            <controls:DataGridTextColumn x:Name="NameColumn" Header="Name" Binding="{Binding Name}" Tag="Name"/>
-                            <controls:DataGridComboBoxColumn Header="Type" Binding="{Binding Type}" Tag="Type"/>
-                            <controls:DataGridTextColumn Header="Base Secs" Binding="{Binding BaseSeconds}" Tag="BaseSeconds"/>
-                            <controls:DataGridTextColumn Header="+ Secs" Binding="{Binding PlusSeconds}" Tag="PlusSeconds"/>
-                            <controls:DataGridTextColumn Header="Temp °C" Binding="{Binding Temp}" Tag="Temp"/>
-                            <controls:DataGridTextColumn Header="Infusions" Binding="{Binding MaxInfusions}" Tag="MaxInfusions"/>
-                            <controls:DataGridTextColumn Header="Alternate Name" Binding="{Binding AltName}" Tag="AltName"/>
-                        </controls:DataGrid.Columns>
-                    </controls:DataGrid>
-                
-                    <StackPanel Orientation="Horizontal" Grid.Row="1" Margin="0,0,0,8" VerticalAlignment="Bottom">
-                        <Button x:Name="loadPresetButton" Content="Load Preset" Margin="12,0,0,8" Click="LoadPreset_Click" />
-                        <Button x:Name="newPresetButton" Content="New" Margin="12,0,0,8" Click="NewPresetButton_Click"/>
-                        <Button x:Name="savePresetButton" Content="Save" Margin="12,0,0,8" Click="SavePresetButton_Click"/>
-                        <DropDownButton x:Name="deletePresetButton" Content="Delete" Margin="12,0,0,8">
-                            <DropDownButton.Flyout>
-                                <MenuFlyout Placement="TopEdgeAlignedLeft">
-                                    <MenuFlyoutItem Text="Yes" Click="DeletePresetButton_Click"/>
-                                    <MenuFlyoutItem Text="No"/>
-                                </MenuFlyout>
-                            </DropDownButton.Flyout>
-                        </DropDownButton>
-                    </StackPanel>
+                                   Grid.Row="0" Grid.Column="0"
+                                   GridLinesVisibility="Vertical" SelectionChanged="presetDataGrid_SelectRow" LoadingRow="PresetDataGrid_LoadingRow" HorizontalAlignment="Left">
+                    <controls:DataGrid.RowBackground>
+                        <SolidColorBrush Color="{ThemeResource SystemChromeBlackMediumColor}"/>
+                    </controls:DataGrid.RowBackground>
+                    <controls:DataGrid.AlternatingRowBackground>
+                        <SolidColorBrush Color="{ThemeResource SystemRevealChromeBlackLowColor}"/>
+                    </controls:DataGrid.AlternatingRowBackground>
+                    <controls:DataGrid.Columns>
+                        <controls:DataGridTextColumn x:Name="NameColumn" Header="Name" Binding="{Binding Name}" Tag="Name"/>
+                        <controls:DataGridComboBoxColumn Header="Type" Binding="{Binding Type}" Tag="Type"/>
+                        <controls:DataGridTextColumn Header="Base Secs" Binding="{Binding BaseSeconds}" Tag="BaseSeconds"/>
+                        <controls:DataGridTextColumn Header="+ Secs" Binding="{Binding PlusSeconds}" Tag="PlusSeconds"/>
+                        <controls:DataGridTextColumn Header="Temp °C" Binding="{Binding Temp}" Tag="Temp"/>
+                        <controls:DataGridTextColumn Header="Infusions" Binding="{Binding MaxInfusions}" Tag="MaxInfusions"/>
+                        <controls:DataGridTextColumn Header="Alternate Name" Binding="{Binding AltName}" Tag="AltName"/>
+                    </controls:DataGrid.Columns>
+                </controls:DataGrid>
+
+                <StackPanel Orientation="Horizontal" Margin="0,0,0,4" Grid.Row="1" VerticalAlignment="Bottom" MinHeight="40">
+                    <Button x:Name="loadPresetButton" Content="Load Preset" Margin="12,0,0,8" Click="LoadPreset_Click" />
+                    <Button x:Name="newPresetButton" Content="New" Margin="12,0,0,8" Click="NewPresetButton_Click"/>
+                    <Button x:Name="savePresetButton" Content="Save" Margin="12,0,0,8" Click="SavePresetButton_Click"/>
+                    <DropDownButton x:Name="deletePresetButton" Content="Delete" Margin="12,0,0,8">
+                        <DropDownButton.Flyout>
+                            <MenuFlyout Placement="TopEdgeAlignedLeft">
+                                <MenuFlyoutItem Text="Yes" Click="DeletePresetButton_Click"/>
+                                <MenuFlyoutItem Text="No"/>
+                            </MenuFlyout>
+                        </DropDownButton.Flyout>
+                    </DropDownButton>
+                </StackPanel>
             </Grid>
 
             <!--Timer Menu-->
@@ -135,6 +149,6 @@
                     </StackPanel>
                 </StackPanel>
             </Grid>
-        </Canvas>
-    </StackPanel>
+        </Grid>
+    </Grid>
 </Page>

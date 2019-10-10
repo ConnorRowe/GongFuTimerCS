@@ -80,7 +80,6 @@ namespace GongFuTimerCSharp
             appDispatcher = appWindow.Dispatcher;
 
             appWindow.Activated += AppWindow_Activated;
-            appWindow.ResizeCompleted += AppWindow_ResizeCompleted;
             this.Loaded += MainPage_Loaded;
 
             SwitchDisplay(AppSection.Timer);
@@ -441,9 +440,6 @@ namespace GongFuTimerCSharp
                     (column as DataGridComboBoxColumn).ItemsSource = Enum.GetValues(typeof(TeaType)).Cast<TeaType>();
                 }
             }
-
-            //resize preset datagrid
-            presetDataGrid.Width = Window.Current.Bounds.Width - (presetDataGrid.Margin.Right * 2);
         }
 
         private void TimerMenu_Tapped(object sender, TappedRoutedEventArgs e)
@@ -470,11 +466,6 @@ namespace GongFuTimerCSharp
             }
         }
 
-        private void AppWindow_ResizeCompleted(Windows.UI.Core.CoreWindow sender, object args)
-        {
-            //Resize preset datagrid
-            presetDataGrid.Width = sender.Bounds.Width - (presetDataGrid.Margin.Right * 2);
-        }
 
         //DataGrid sorting stuff
         private void presetDataGrid_Sort(object sender, DataGridColumnEventArgs e)
