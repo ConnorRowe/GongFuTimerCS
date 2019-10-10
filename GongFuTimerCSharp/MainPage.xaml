@@ -7,7 +7,7 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     mc:Ignorable="d"
-    Background="{ThemeResource SystemRevealListLowColor}">
+    Background="{ThemeResource SystemRevealListLowColor}" Width="Auto" Height="Auto">
     <Page.Resources>
     </Page.Resources>
     <StackPanel>
@@ -19,7 +19,7 @@
             <controls:MenuItem x:Name="LoadPresetMenu" Header="Presets" Tapped="PresetMenu_Tapped" BorderThickness="0,0,0,4"/>
             <controls:MenuItem x:Name="SettingsMenu" Header="Settings" BorderThickness="0,0,0,4" Tapped="SettingsMenu_Tapped"/>
         </controls:Menu>
-        <Canvas>
+        <Canvas HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
             <TextBlock x:Name="debugTextBlock" Text="DEBUG">
                 <TextBlock.Foreground>
                     <SolidColorBrush Color="{ThemeResource SystemBaseMediumColor}"/>
@@ -41,17 +41,18 @@
             </Grid>
 
             <!--Load Preset Menu-->
-            <Grid x:Name="PresetGrid" Visibility="Collapsed">
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="650"/>
-                </Grid.ColumnDefinitions>
-                <StackPanel>
-                    <controls:DataGrid x:Name="presetDataGrid"
+            <Grid x:Name="PresetGrid" Visibility="Visible">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="248"/>
+                    <RowDefinition Height="*"/>
+                </Grid.RowDefinitions>
+                <controls:DataGrid x:Name="presetDataGrid"
                                    Height="200" Margin="12,12,12,8"
                                    AutoGenerateColumns="False"
                                    IsReadOnly="False"
                                    CanUserSortColumns="True" Sorting="presetDataGrid_Sort"
-                                   GridLinesVisibility="Vertical" SelectionChanged="presetDataGrid_SelectRow" LoadingRow="PresetDataGrid_LoadingRow" UnloadingRow="PresetDataGrid_UnloadingRow">
+                                   
+                                   GridLinesVisibility="Vertical" SelectionChanged="presetDataGrid_SelectRow" LoadingRow="PresetDataGrid_LoadingRow">
                         <controls:DataGrid.RowBackground>
                             <SolidColorBrush Color="{ThemeResource SystemChromeBlackMediumColor}"/>
                         </controls:DataGrid.RowBackground>
@@ -68,7 +69,8 @@
                             <controls:DataGridTextColumn Header="Alternate Name" Binding="{Binding AltName}" Tag="AltName"/>
                         </controls:DataGrid.Columns>
                     </controls:DataGrid>
-                    <StackPanel Orientation="Horizontal">
+                
+                    <StackPanel Orientation="Horizontal" Grid.Row="1" Margin="0,0,0,8" VerticalAlignment="Bottom">
                         <Button x:Name="loadPresetButton" Content="Load Preset" Margin="12,0,0,8" Click="LoadPreset_Click" />
                         <Button x:Name="newPresetButton" Content="New" Margin="12,0,0,8" Click="NewPresetButton_Click"/>
                         <Button x:Name="savePresetButton" Content="Save" Margin="12,0,0,8" Click="SavePresetButton_Click"/>
@@ -81,11 +83,10 @@
                             </DropDownButton.Flyout>
                         </DropDownButton>
                     </StackPanel>
-                </StackPanel>
             </Grid>
 
             <!--Timer Menu-->
-            <Grid x:Name="GongFuGrid" Visibility="Visible">
+            <Grid x:Name="GongFuGrid" Visibility="Collapsed">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="650"/>
                 </Grid.ColumnDefinitions>

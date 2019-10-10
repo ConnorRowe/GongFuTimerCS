@@ -80,12 +80,14 @@ namespace GongFuTimerCSharp
             appDispatcher = appWindow.Dispatcher;
 
             appWindow.Activated += AppWindow_Activated;
+            appWindow.ResizeCompleted += AppWindow_ResizeCompleted;
             this.Loaded += MainPage_Loaded;
 
             SwitchDisplay(AppSection.Timer);
             //------------------------------- Main Loop -------------------------------
             MainLoop();
         }
+
 
         //Enumerator
         public enum AppSection
@@ -257,7 +259,8 @@ namespace GongFuTimerCSharp
                     foreach (var colItem in presetDataGrid.Columns)
                     {
                         DataGridCell cell = ((DataGridCell)colItem.GetCellContent(row).Parent);
-                        cell.Background = lowlight;
+                        if (cell != null)
+                            cell.Background = lowlight;
                     }
                 }
                 //Reset other rows
@@ -438,6 +441,9 @@ namespace GongFuTimerCSharp
                     (column as DataGridComboBoxColumn).ItemsSource = Enum.GetValues(typeof(TeaType)).Cast<TeaType>();
                 }
             }
+
+            //resize preset datagrid
+            presetDataGrid.Width = Window.Current.Bounds.Width - (presetDataGrid.Margin.Right * 2);
         }
 
         private void TimerMenu_Tapped(object sender, TappedRoutedEventArgs e)
@@ -462,6 +468,12 @@ namespace GongFuTimerCSharp
                 ApplyTea((Tea)presetDataGrid.SelectedItem);
                 SwitchDisplay(AppSection.Timer);
             }
+        }
+
+        private void AppWindow_ResizeCompleted(Windows.UI.Core.CoreWindow sender, object args)
+        {
+            //Resize preset datagrid
+            presetDataGrid.Width = sender.Bounds.Width - (presetDataGrid.Margin.Right * 2);
         }
 
         //DataGrid sorting stuff
