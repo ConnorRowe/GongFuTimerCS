@@ -50,7 +50,7 @@
             </Grid>
 
             <!--Load Preset Menu-->
-            <Grid x:Name="PresetGrid" Visibility="Visible">
+            <Grid x:Name="PresetGrid" Visibility="Collapsed">
                 <Grid.RowDefinitions>
                     <RowDefinition Height="20*"/>
                     <RowDefinition Height="auto"/>
@@ -100,54 +100,71 @@
             </Grid>
 
             <!--Timer Menu-->
-            <Grid x:Name="GongFuGrid" Visibility="Collapsed">
+            <Grid x:Name="GongFuGrid" Visibility="Visible">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="20*"/>
+                    <RowDefinition Height="40*"/>
+                    <RowDefinition Height="40*"/>
+                </Grid.RowDefinitions>
                 <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="650"/>
+                    <ColumnDefinition Width="*"/>
                 </Grid.ColumnDefinitions>
 
-                <TextBlock Text="Connor Magson 2019" HorizontalAlignment="Right" VerticalAlignment="Bottom" FontSize="9">
+                <TextBlock Text="Connor Magson 2019" HorizontalAlignment="Right" VerticalAlignment="Bottom" FontSize="9" Grid.Row="2">
                     <TextBlock.Foreground>
                         <SolidColorBrush Color="{ThemeResource SystemBaseLowColor}"/>
                     </TextBlock.Foreground>
                 </TextBlock>
 
-                <StackPanel x:Name="contentPanel" Margin="48,4,0,0" Grid.ColumnSpan="3" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
-                    <TextBlock HorizontalAlignment="Left" Text="GongFu Timer" FontSize="28" Foreground="{x:Bind Path=highlight, Mode=OneWay}"/>
-                    <TextBlock Text="{x:Bind Path=teaInfo, Mode=OneWay}" FontSize="16" Foreground="{x:Bind Path=highlight, Mode=OneWay}" Margin="0,4,0,0"/>
-                    <TextBlock x:Name="Subheading" Text="{x:Bind Path=activeTea.AltName, Mode=OneWay}" Foreground="{x:Bind Path=highlight, Mode=OneWay}" FontStyle="Italic" FontSize="12" Margin="0,4,0,8"/>
-
-                    <StackPanel x:Name="timeInputPanel" Orientation="Horizontal">
-                        <StackPanel x:Name="baseTimePanel" Padding="0" Margin="0,0,40,0">
-                            <TextBox x:Name="baseSecsTextBox" Text="0" TextAlignment="Center" InputScope="Number" Header="Base Infusion Seconds"/>
-                        </StackPanel>
-                        <StackPanel x:Name="modifierPanel" Margin="0,0,40,0">
-                            <TextBox x:Name="infSecsTextBox" Text="0" TextAlignment="Center" InputScope="Number" Header="+ Infusion Seconds" />
-                        </StackPanel>
-                        <StackPanel x:Name="currentInfusionPanel">
-                            <TextBlock Text="Current Infusion"/>
-                            <Border x:Name="infNumBorder" BorderThickness="2,2,2,2" VerticalAlignment="Stretch" Margin="0,4,0,0" Background="#7F000000">
-                                <Border.BorderBrush>
-                                    <SolidColorBrush Color="#66FFFFFF"/>
-                                </Border.BorderBrush>
-                                <TextBlock x:Name="infNumText" Text="0" HorizontalAlignment="Center" VerticalAlignment="Stretch" Margin="0,4.25,0,4.25"/>
-                            </Border>
-                        </StackPanel>
+                <Viewbox StretchDirection="UpOnly" Stretch="Uniform" Grid.Row="0" MaxHeight="200">
+                    <StackPanel x:Name="contentPanel" Margin="8" Grid.Row="0" HorizontalAlignment="Stretch" VerticalAlignment="Top">
+                        <TextBlock HorizontalAlignment="Left" Text="GongFu Timer" FontSize="28" Foreground="{x:Bind Path=highlight, Mode=OneWay}"/>
+                        <TextBlock Text="{x:Bind Path=teaInfo, Mode=OneWay}" FontSize="16" Foreground="{x:Bind Path=highlight, Mode=OneWay}" Margin="0,4,0,0" TextWrapping="WrapWholeWords"/>
+                        <TextBlock x:Name="Subheading" Text="{x:Bind Path=activeTea.AltName, Mode=OneWay}" Foreground="{x:Bind Path=highlight, Mode=OneWay}" FontStyle="Italic" FontSize="12" Margin="0,4,0,8"/>
                     </StackPanel>
-                    <StackPanel x:Name="inputPanel" Orientation="Horizontal" Margin="0,20,0,20">
-                        <StackPanel x:Name="timerPanel" Orientation="Horizontal" HorizontalAlignment="Center" BorderBrush="#66FFFFFF" BorderThickness="4,4,4,4" Height="90" Width="238" Background="#7F000000">
+                </Viewbox>
+                <!--time input panel-->
+                <Viewbox Grid.Row="1" StretchDirection="UpOnly" Stretch="Uniform">
+                <StackPanel x:Name="timeInputPanel" Orientation="Horizontal" Grid.Row="1" Margin="8" VerticalAlignment="Top">
+                    <StackPanel x:Name="baseTimePanel" Padding="0" Margin="0,0,40,0">
+                        <TextBox x:Name="baseSecsTextBox" Text="0" TextAlignment="Center" InputScope="Number" Header="Base Infusion Seconds"/>
+                    </StackPanel>
+                    <StackPanel x:Name="modifierPanel" Margin="0,0,40,0">
+                        <TextBox x:Name="infSecsTextBox" Text="0" TextAlignment="Center" InputScope="Number" Header="+ Infusion Seconds" />
+                    </StackPanel>
+                    <StackPanel x:Name="currentInfusionPanel">
+                        <TextBlock Text="Current Infusion"/>
+                        <Border x:Name="infNumBorder" BorderThickness="2,2,2,2" VerticalAlignment="Stretch" Margin="0,4,0,0" Background="#7F000000">
+                            <Border.BorderBrush>
+                                <SolidColorBrush Color="#66FFFFFF"/>
+                            </Border.BorderBrush>
+                            <TextBlock x:Name="infNumText" Text="0" HorizontalAlignment="Center" VerticalAlignment="Stretch" Margin="0,4.25,0,4.25"/>
+                        </Border>
+                    </StackPanel>
+                </StackPanel>
+                </Viewbox>
+                <Viewbox StretchDirection="UpOnly" Stretch="Uniform" Grid.Row="2">
+                    <Grid x:Name="inputPanel" Margin="8" Grid.Row="2" VerticalAlignment="Bottom">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition Width="Auto"/>
+                        </Grid.ColumnDefinitions>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="*"/>
+                        </Grid.RowDefinitions>
+                        <StackPanel x:Name="timerPanel" Grid.Column="0" Orientation="Horizontal" BorderBrush="#66FFFFFF" BorderThickness="4,4,4,4" Height="Auto" Width="Auto" Background="#7F000000" Margin="8,8,8,8">
                             <TextBlock x:Name="minuteText" Text="00" Style="{ThemeResource HeaderTextBlockStyle}" Margin="10,0,10,0" VerticalAlignment="Center" Width="52"/>
                             <TextBlock Text=":" Style="{ThemeResource HeaderTextBlockStyle}" Margin="0,0,10,0" VerticalAlignment="Center"/>
                             <TextBlock x:Name="secondText" Text="00" Style="{ThemeResource HeaderTextBlockStyle}" Margin="0,0,10,0" VerticalAlignment="Center" Width="52"/>
                             <TextBlock Text=":" Style="{ThemeResource HeaderTextBlockStyle}" Margin="0,0,10,0" VerticalAlignment="Center"/>
                             <TextBlock x:Name="millisecondText" Text="00" Style="{ThemeResource HeaderTextBlockStyle}" VerticalAlignment="Center" Width="52"/>
                         </StackPanel>
-                        <StackPanel x:Name="buttonPanel" Orientation="Horizontal">
-                            <!--  Buttons  -->
-                            <Button x:Name="startButton" Content="Start" Margin="20,0,0,0" Click="Start_Click"/>
-                            <Button x:Name="resetButton" Content="Reset" Margin="20,0,0,0" Click="Reset_Click"/>
-                        </StackPanel>
-                    </StackPanel>
-                </StackPanel>
+                        <!--  Buttons  -->
+                        <Button x:Name="startButton" Content="Start" Margin="8,0,8,0" Click="Start_Click" Grid.Column="1"/>
+                        <Button x:Name="resetButton" Content="Reset" Margin="8,0,8,0" Click="Reset_Click" Grid.Column="2"/>
+                    </Grid>
+                </Viewbox>
             </Grid>
         </Grid>
     </Grid>
