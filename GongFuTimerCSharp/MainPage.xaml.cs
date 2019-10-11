@@ -59,6 +59,7 @@ namespace GongFuTimerCSharp
 
         public MainPage()
         {
+            //Initialising stuff
             this.InitializeComponent();
             teaTimer = new Timer();
             alarmSound = new MediaElement();
@@ -79,6 +80,14 @@ namespace GongFuTimerCSharp
             Windows.UI.Core.CoreWindow appWindow = Windows.UI.Core.CoreWindow.GetForCurrentThread();
             appDispatcher = appWindow.Dispatcher;
 
+            //Minimum size
+            var view = Windows.UI.ViewManagement.ApplicationView.GetForCurrentView();
+            Size viewSize = new Size { Width = 500, Height = 356 };
+
+            view.SetPreferredMinSize(viewSize);
+            view.TryResizeView(viewSize);
+
+            //event handlers for window activated / mainpage loadeds
             appWindow.Activated += AppWindow_Activated;
             this.Loaded += MainPage_Loaded;
 

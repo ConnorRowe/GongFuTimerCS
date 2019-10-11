@@ -4,7 +4,7 @@
   <mp:PhoneIdentity PhoneProductId="ce50a99d-874f-48fd-82a0-b4bf8c7d4f92" PhonePublisherId="00000000-0000-0000-0000-000000000000" />
   <Properties>
     <DisplayName>GongFuTimerCSharp</DisplayName>
-    <PublisherDisplayName>conno</PublisherDisplayName>
+    <PublisherDisplayName>ConnorRowe</PublisherDisplayName>
     <Logo>Assets\StoreLogo.png</Logo>
   </Properties>
   <Dependencies>
@@ -16,7 +16,7 @@
   <Applications>
     <Application Id="App" Executable="$targetnametoken$.exe" EntryPoint="GongFuTimerCSharp.App">
       <uap:VisualElements DisplayName="Gong Fu Timer" Square150x150Logo="Assets\Square150x150Logo.png" Square44x44Logo="Assets\Square44x44Logo.png" Description="A small C# UWP app to help time your gong fu cha sessions. (re-write of my C++ version)" BackgroundColor="transparent">
-        <uap:DefaultTile Wide310x150Logo="Assets\Wide310x150Logo.png">
+        <uap:DefaultTile Wide310x150Logo="Assets\Wide310x150Logo.png" Square310x310Logo="Assets\LargeTile.png" Square71x71Logo="Assets\SmallTile.png" ShortName="GongFu">
         </uap:DefaultTile>
         <uap:SplashScreen Image="Assets\SplashScreen.png" />
         <uap:InitialRotationPreference>
@@ -25,7 +25,4 @@
       </uap:VisualElements>
     </Application>
   </Applications>
-  <Capabilities>
-    <Capability Name="internetClient" />
-  </Capabilities>
 </Package>
