@@ -145,7 +145,7 @@ namespace GongFuTimerCSharp
                 presets = new PresetCollection();
             }
 
-            presetDataGrid.ItemsSource = presets.Presets;
+            this.Bindings.Update();
         }
 
         public async void SavePresetsToFile()
@@ -479,44 +479,41 @@ namespace GongFuTimerCSharp
         //DataGrid sorting stuff
         private void presetDataGrid_Sort(object sender, DataGridColumnEventArgs e)
         {
-            if(e.Column.SortDirection == null || e.Column.SortDirection == DataGridSortDirection.Ascending)
-            {
-                //Use the Tag property to pass the bound column name for the sorting implementation
-                if(e.Column.Tag.ToString() == "Name")
+            //Use the Tag property to pass the bound column name for the sorting implementation
+            if (e.Column.SortDirection == null || e.Column.SortDirection == DataGridSortDirection.Descending)
+            {          
+                switch(e.Column.Tag.ToString())
                 {
-
                     //Implement ascending sort on the column "Range" using LINQ
-                    presetDataGrid.ItemsSource = new System.Collections.ObjectModel.ObservableCollection<Tea>(from preset in presets.Presets
-                                                                        orderby preset.Name descending
-                                                                        select preset);
+                    case "Name":
+                        presetDataGrid.ItemsSource = new System.Collections.ObjectModel.ObservableCollection<Tea>(from preset in presets.Presets orderby preset.Name ascending select preset);
+                        break;
+                    case "Type":
+                        presetDataGrid.ItemsSource = new System.Collections.ObjectModel.ObservableCollection<Tea>(from preset in presets.Presets orderby preset.Type ascending select preset);
+                        break;
+                    case "BaseSeconds":
+                        presetDataGrid.ItemsSource = new System.Collections.ObjectModel.ObservableCollection<Tea>(from preset in presets.Presets orderby preset.Type ascending select preset);
+                        break;
+                    case "PlusSeconds":
+                        presetDataGrid.ItemsSource = new System.Collections.ObjectModel.ObservableCollection<Tea>(from preset in presets.Presets orderby preset.PlusSeconds ascending select preset);
+                        break;
+                    case "Temp":
+                        presetDataGrid.ItemsSource = new System.Collections.ObjectModel.ObservableCollection<Tea>(from preset in presets.Presets orderby preset.Temp ascending select preset);
+                        break;
+                    case "MaxInfusions":
+                        presetDataGrid.ItemsSource = new System.Collections.ObjectModel.ObservableCollection<Tea>(from preset in presets.Presets orderby preset.MaxInfusions ascending select preset);
+                        break;
+                    case "AltName":
+                        break;
                 }
-                if (e.Column.Tag.ToString() == "Type")
-                {
-                    presetDataGrid.ItemsSource = new System.Collections.ObjectModel.ObservableCollection<Tea>(from preset in presets.Presets orderby preset.Type descending select preset);
-                }
-                if (e.Column.Tag.ToString() == "BaseSeconds")
-                {
-                    presetDataGrid.ItemsSource = new System.Collections.ObjectModel.ObservableCollection<Tea>(from preset in presets.Presets orderby preset.BaseSeconds descending select preset);
-                }
-                if (e.Column.Tag.ToString() == "PlusSeconds")
-                {
-                    presetDataGrid.ItemsSource = new System.Collections.ObjectModel.ObservableCollection<Tea>(from preset in presets.Presets orderby preset.PlusSeconds descending select preset);
-                }
-                if (e.Column.Tag.ToString() == "Temp")
-                {
-                    presetDataGrid.ItemsSource = new System.Collections.ObjectModel.ObservableCollection<Tea>(from preset in presets.Presets orderby preset.Temp descending select preset);
-                }
-                if (e.Column.Tag.ToString() == "MaxInfusions")
-                {
-                    presetDataGrid.ItemsSource = new System.Collections.ObjectModel.ObservableCollection<Tea>(from preset in presets.Presets orderby preset.MaxInfusions descending select preset);
-                }
-                e.Column.SortDirection = DataGridSortDirection.Descending;
+
+                e.Column.SortDirection = DataGridSortDirection.Ascending;
 
                 if (e.Column.Tag.ToString() == "AltName")
                 {
                     e.Column.SortDirection = null;
                 }
-
+                
                 //Reset all other columns
                 foreach(DataGridColumn column in (sender as DataGrid).Columns)
                 {
@@ -524,41 +521,43 @@ namespace GongFuTimerCSharp
                         column.SortDirection = null;
                 }
             }
-            else if (e.Column.SortDirection == DataGridSortDirection.Descending)
+            else if (e.Column.SortDirection == DataGridSortDirection.Ascending)
             {
-                if (e.Column.Tag.ToString() == "Name")
+                switch (e.Column.Tag.ToString())
                 {
-                    presetDataGrid.ItemsSource = new System.Collections.ObjectModel.ObservableCollection<Tea>(from preset in presets.Presets orderby preset.Name ascending select preset);
+                    //Implement ascending sort on the column "Range" using LINQ
+                    case "Name":
+                        presetDataGrid.ItemsSource = new System.Collections.ObjectModel.ObservableCollection<Tea>(from preset in presets.Presets orderby preset.Name descending select preset);
+                        break;
+                    case "Type":
+                        presetDataGrid.ItemsSource = new System.Collections.ObjectModel.ObservableCollection<Tea>(from preset in presets.Presets orderby preset.Type descending select preset);
+                        break;
+                    case "BaseSeconds":
+                        presetDataGrid.ItemsSource = new System.Collections.ObjectModel.ObservableCollection<Tea>(from preset in presets.Presets orderby preset.Type descending select preset);
+                        break;
+                    case "PlusSeconds":
+                        presetDataGrid.ItemsSource = new System.Collections.ObjectModel.ObservableCollection<Tea>(from preset in presets.Presets orderby preset.PlusSeconds descending select preset);
+                        break;
+                    case "Temp":
+                        presetDataGrid.ItemsSource = new System.Collections.ObjectModel.ObservableCollection<Tea>(from preset in presets.Presets orderby preset.Temp descending select preset);
+                        break;
+                    case "MaxInfusions":
+                        presetDataGrid.ItemsSource = new System.Collections.ObjectModel.ObservableCollection<Tea>(from preset in presets.Presets orderby preset.MaxInfusions descending select preset);
+                        break;
                 }
-                if (e.Column.Tag.ToString() == "Type")
-                {
-                    presetDataGrid.ItemsSource = new System.Collections.ObjectModel.ObservableCollection<Tea>(from preset in presets.Presets orderby preset.Type ascending select preset);
-                }
-                if (e.Column.Tag.ToString() == "BaseSeconds")
-                {
-                    presetDataGrid.ItemsSource = new System.Collections.ObjectModel.ObservableCollection<Tea>(from preset in presets.Presets orderby preset.BaseSeconds ascending select preset);
-                }
-                if (e.Column.Tag.ToString() == "PlusSeconds")
-                {
-                    presetDataGrid.ItemsSource = new System.Collections.ObjectModel.ObservableCollection<Tea>(from preset in presets.Presets orderby preset.PlusSeconds ascending select preset);
-                }
-                if (e.Column.Tag.ToString() == "Temp")
-                {
-                    presetDataGrid.ItemsSource = new System.Collections.ObjectModel.ObservableCollection<Tea>(from preset in presets.Presets orderby preset.Temp ascending select preset);
-                }
-                if (e.Column.Tag.ToString() == "MaxInfusions")
-                {
-                    presetDataGrid.ItemsSource = new System.Collections.ObjectModel.ObservableCollection<Tea>(from preset in presets.Presets orderby preset.MaxInfusions ascending select preset);
-                }
-                e.Column.SortDirection = DataGridSortDirection.Ascending;
+
+                e.Column.SortDirection = DataGridSortDirection.Descending;
             }
+
+            System.GC.Collect();
         }
 
         //Adding a new tea preset
         private void NewPresetButton_Click(object sender, RoutedEventArgs e)
         {
             presets.Presets.Add(new Tea("New", "", 0, 0, 0, 0, 0));
-            presetDataGrid.ItemsSource = new System.Collections.ObjectModel.ObservableCollection<Tea>(presets.Presets);
+            presetDataGrid.ItemsSource = null;
+            presetDataGrid.ItemsSource = presets.Presets;
         }
 
         private void SavePresetButton_Click(object sender, RoutedEventArgs e)
@@ -570,7 +569,8 @@ namespace GongFuTimerCSharp
         private void DeletePresetButton_Click(object sender, RoutedEventArgs e)
         {
             presets.Presets.Remove((Tea)presetDataGrid.SelectedItem);
-            presetDataGrid.ItemsSource = new System.Collections.ObjectModel.ObservableCollection<Tea>(presets.Presets);
+            presetDataGrid.ItemsSource = null;
+            presetDataGrid.ItemsSource = presets.Presets;
         }
 
         private void TeaHighlights_Toggled(object sender, RoutedEventArgs e)
@@ -661,6 +661,17 @@ namespace GongFuTimerCSharp
         public ushort PlusSeconds { get; set; }
         public ushort Temp { get; set; }
         public ushort MaxInfusions { get; set; }
+
+        public Tea()
+        {
+            this.Name = "";
+            this.AltName = "";
+            this.Type = 0;
+            this.BaseSeconds = 0;
+            this.PlusSeconds = 0;
+            this.Temp = 0;
+            this.MaxInfusions = 0;
+        }
 
         public Tea(String name, String altname, TeaType type, ushort baseseconds, ushort plusseconds, ushort temp, ushort maxinfusions)
         {

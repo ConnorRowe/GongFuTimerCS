@@ -66,7 +66,8 @@
                                    IsReadOnly="False"
                                    CanUserSortColumns="True" Sorting="presetDataGrid_Sort"
                                    Grid.Row="0" Grid.Column="0"
-                                   GridLinesVisibility="Vertical" SelectionChanged="presetDataGrid_SelectRow" LoadingRow="PresetDataGrid_LoadingRow" HorizontalAlignment="Left">
+                                   GridLinesVisibility="Vertical" SelectionChanged="presetDataGrid_SelectRow" LoadingRow="PresetDataGrid_LoadingRow" HorizontalAlignment="Left"
+                                   ItemsSource="{x:Bind Path=presets.Presets, Mode=OneWay}">
                         <controls:DataGrid.RowBackground>
                             <SolidColorBrush Color="{ThemeResource SystemChromeBlackMediumColor}"/>
                         </controls:DataGrid.RowBackground>
