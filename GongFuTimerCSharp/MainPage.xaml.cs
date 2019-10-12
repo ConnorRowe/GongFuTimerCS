@@ -268,7 +268,7 @@ namespace GongFuTimerCSharp
                     {
                         DataGridCell cell = ((DataGridCell)colItem.GetCellContent(row).Parent);
                         if (cell != null)
-                            cell.Background = lowlight;
+                            cell.Background = (SolidColorBrush)Application.Current.Resources[ (row.DataContext as Tea).Type.ToString() + "Lowlight" ];
                     }
                 }
                 //Reset other rows
