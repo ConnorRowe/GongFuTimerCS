@@ -232,7 +232,17 @@ namespace GongFuTimerCSharp
 
         public float StoF(String str)
         {
-            return float.Parse(str);
+            float parsedString = -1.0f;
+
+            try
+            {
+                parsedString = float.Parse(str);
+            }
+            catch(Exception)
+            {
+            }
+
+            return parsedString;
         }
 
         public String FormatFloat(float f)
@@ -726,6 +736,19 @@ namespace GongFuTimerCSharp
             }
 
             settings.hasChanged = true; 
+        }
+
+        //Validate timer inputs - ensure they are numbers
+        private void Timer_TextChanged(object sender, TextChangedEventArgs e)
+        {
+            try
+            {
+                float.Parse(((sender as TextBox).Text));
+            }
+            catch(FormatException)
+            {
+                (sender as TextBox).Text = "0";
+            }
         }
     }
 

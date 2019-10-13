@@ -135,10 +135,10 @@
                 <Viewbox Grid.Row="1" StretchDirection="UpOnly" Stretch="Uniform">
                     <StackPanel x:Name="timeInputPanel" Orientation="Horizontal" Grid.Row="1" Margin="8" VerticalAlignment="Top">
                         <StackPanel x:Name="baseTimePanel" Padding="0" Margin="0,0,40,0">
-                            <TextBox x:Name="baseSecsTextBox" Text="0" TextAlignment="Center" InputScope="Number" Header="Base Infusion Seconds"/>
+                            <TextBox x:Name="baseSecsTextBox" Text="0" TextAlignment="Center" InputScope="Number" Header="Base Infusion Seconds" TextChanged="Timer_TextChanged"/>
                         </StackPanel>
                         <StackPanel x:Name="modifierPanel" Margin="0,0,40,0">
-                            <TextBox x:Name="infSecsTextBox" Text="0" TextAlignment="Center" InputScope="Number" Header="+ Infusion Seconds" />
+                            <TextBox x:Name="infSecsTextBox" Text="0" TextAlignment="Center" InputScope="Number" Header="+ Infusion Seconds" TextChanged="Timer_TextChanged"/>
                         </StackPanel>
                         <StackPanel x:Name="currentInfusionPanel">
                             <TextBlock Text="Current Infusion"/>
