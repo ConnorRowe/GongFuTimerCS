@@ -48,7 +48,10 @@ namespace GongFuTimerCSharp
         PresetCollection presets = new PresetCollection();
 
         //Settings
-        public bool isHighlightsTea = true;
+        public AppSettings settings;
+
+        //Other functionality
+        public bool hasSorted = false;
 
         //Appearance
         public Tea activeTea;
@@ -56,11 +59,12 @@ namespace GongFuTimerCSharp
         public SolidColorBrush lowlight;
         public String teaInfo;
         public List<DataGridRow> presetRows;
+        public bool isBackgroundFallback = false;
+        public AcrylicBrush bgBrush = new AcrylicBrush();
 
         public MainPage()
         {
             //Initialising stuff
-            this.InitializeComponent();
             teaTimer = new Timer();
             alarmSound = new MediaElement();
             activeTea = new Tea("", "", 0, 0, 0, 0, 0);
@@ -68,6 +72,22 @@ namespace GongFuTimerCSharp
             lowlight = (SolidColorBrush)Application.Current.Resources["Lowlight"];
             teaInfo = "";
             presetRows = new List<DataGridRow>();
+            //BgBrush
+            if (Windows.Foundation.Metadata.ApiInformation.IsTypePresent("Windows.UI.Xaml.Media.XamlCompositionBrushBase"))
+            {
+                bgBrush.BackgroundSource = Windows.UI.Xaml.Media.AcrylicBackgroundSource.HostBackdrop;
+                bgBrush.TintColor = Windows.UI.Color.FromArgb(255, 35, 35, 35);
+                bgBrush.FallbackColor = Windows.UI.Color.FromArgb(255, 31, 31, 31);
+                bgBrush.TintOpacity = 0.8;
+                
+                this.Background = bgBrush;
+            }
+            else
+            {
+                SolidColorBrush myBrush = new SolidColorBrush(Windows.UI.Color.FromArgb(255, 202, 24, 37));
+
+                this.Background = bgBrush;
+            }
 
             //Init timer so it displays at 0 seconds at the start
             teaTimer.Clear();
@@ -75,6 +95,9 @@ namespace GongFuTimerCSharp
             //Load stuff from files
             LoadAlarmFile();
             LoadPresetsFromFile();
+            settings = new AppSettings(this);
+            //ApplySettings(settings);
+
 
             //Get dispatcher for main loop
             Windows.UI.Core.CoreWindow appWindow = Windows.UI.Core.CoreWindow.GetForCurrentThread();
@@ -91,7 +114,8 @@ namespace GongFuTimerCSharp
             appWindow.Activated += AppWindow_Activated;
             this.Loaded += MainPage_Loaded;
 
-            SwitchDisplay(AppSection.Timer);
+            this.InitializeComponent();
+
             //------------------------------- Main Loop -------------------------------
             MainLoop();
         }
@@ -362,6 +386,12 @@ namespace GongFuTimerCSharp
             LoadPresetMenu.BorderBrush = null;
             SettingsMenu.BorderBrush = null;
 
+            //If switching from the settings menu and the settings have changed, save them to file
+            if(SettingsGrid.Visibility == Visibility.Visible && settings.hasChanged)
+            {
+                settings.SaveSettingsToFile();
+            }
+
             switch (section)
             {
                 case AppSection.Timer:
@@ -392,7 +422,8 @@ namespace GongFuTimerCSharp
             ResetTimer();
             activeTea = tea;
             teaInfo = FormatTeaInfo();
-            if (isHighlightsTea)
+            settings.lastTea = tea;
+            if (settings.isHighlightsTea)
             {
                 String highlightName = activeTea.Type.ToString() + "HighlightDark";
                 highlight = (SolidColorBrush)Application.Current.Resources[highlightName];
@@ -402,6 +433,7 @@ namespace GongFuTimerCSharp
             }
             HighlightDataGridRow(activeTea.Name);
 
+            settings.SaveSettingsToFile();
             this.Bindings.Update();
         }
 
@@ -413,6 +445,18 @@ namespace GongFuTimerCSharp
             infNumText.Text = "0";
             //Also reset startbutton text
             startButton.Content = "Start";
+        }
+
+        public void ApplySettings(AppSettings settings)
+        {
+            TeaHighlightSwitch.IsOn = settings.isHighlightsTea;
+            AcrylicBGSwitch.IsOn = settings.isBackgroundAcrylic;
+            RemLastTeaSwitch.IsOn = settings.isLastTeaRemembered;
+
+            if(settings.isLastTeaRemembered && settings.lastTea != null)
+            {
+                ApplyTea(settings.lastTea);
+            }
         }
 
         //Events
@@ -479,6 +523,10 @@ namespace GongFuTimerCSharp
         //DataGrid sorting stuff
         private void presetDataGrid_Sort(object sender, DataGridColumnEventArgs e)
         {
+            presetDataGrid.ItemsSource = null;
+            List<Tea> sortedList = new List<Tea>();
+            hasSorted = true;
+
             //Use the Tag property to pass the bound column name for the sorting implementation
             if (e.Column.SortDirection == null || e.Column.SortDirection == DataGridSortDirection.Descending)
             {          
@@ -486,22 +534,22 @@ namespace GongFuTimerCSharp
                 {
                     //Implement ascending sort on the column "Range" using LINQ
                     case "Name":
-                        presetDataGrid.ItemsSource = new System.Collections.ObjectModel.ObservableCollection<Tea>(from preset in presets.Presets orderby preset.Name ascending select preset);
+                        sortedList = new List<Tea>(from preset in presets.Presets orderby preset.Name ascending select preset);
                         break;
                     case "Type":
-                        presetDataGrid.ItemsSource = new System.Collections.ObjectModel.ObservableCollection<Tea>(from preset in presets.Presets orderby preset.Type ascending select preset);
+                        sortedList = new List<Tea>(from preset in presets.Presets orderby preset.Type ascending select preset);
                         break;
                     case "BaseSeconds":
-                        presetDataGrid.ItemsSource = new System.Collections.ObjectModel.ObservableCollection<Tea>(from preset in presets.Presets orderby preset.Type ascending select preset);
+                        sortedList = new List<Tea>(from preset in presets.Presets orderby preset.BaseSeconds ascending select preset);
                         break;
                     case "PlusSeconds":
-                        presetDataGrid.ItemsSource = new System.Collections.ObjectModel.ObservableCollection<Tea>(from preset in presets.Presets orderby preset.PlusSeconds ascending select preset);
+                        sortedList = new List<Tea>(from preset in presets.Presets orderby preset.PlusSeconds ascending select preset);
                         break;
                     case "Temp":
-                        presetDataGrid.ItemsSource = new System.Collections.ObjectModel.ObservableCollection<Tea>(from preset in presets.Presets orderby preset.Temp ascending select preset);
+                        sortedList = new List<Tea>(from preset in presets.Presets orderby preset.Temp ascending select preset);
                         break;
                     case "MaxInfusions":
-                        presetDataGrid.ItemsSource = new System.Collections.ObjectModel.ObservableCollection<Tea>(from preset in presets.Presets orderby preset.MaxInfusions ascending select preset);
+                        sortedList = new List<Tea>(from preset in presets.Presets orderby preset.MaxInfusions ascending select preset);
                         break;
                     case "AltName":
                         break;
@@ -527,26 +575,33 @@ namespace GongFuTimerCSharp
                 {
                     //Implement ascending sort on the column "Range" using LINQ
                     case "Name":
-                        presetDataGrid.ItemsSource = new System.Collections.ObjectModel.ObservableCollection<Tea>(from preset in presets.Presets orderby preset.Name descending select preset);
+                        sortedList = new List<Tea>(from preset in presets.Presets orderby preset.Name descending select preset);
                         break;
                     case "Type":
-                        presetDataGrid.ItemsSource = new System.Collections.ObjectModel.ObservableCollection<Tea>(from preset in presets.Presets orderby preset.Type descending select preset);
+                        sortedList = new List<Tea>(from preset in presets.Presets orderby preset.Type descending select preset);
                         break;
                     case "BaseSeconds":
-                        presetDataGrid.ItemsSource = new System.Collections.ObjectModel.ObservableCollection<Tea>(from preset in presets.Presets orderby preset.Type descending select preset);
+                        sortedList = new List<Tea>(from preset in presets.Presets orderby preset.BaseSeconds descending select preset);
                         break;
                     case "PlusSeconds":
-                        presetDataGrid.ItemsSource = new System.Collections.ObjectModel.ObservableCollection<Tea>(from preset in presets.Presets orderby preset.PlusSeconds descending select preset);
+                        sortedList = new List<Tea>(from preset in presets.Presets orderby preset.PlusSeconds descending select preset);
                         break;
                     case "Temp":
-                        presetDataGrid.ItemsSource = new System.Collections.ObjectModel.ObservableCollection<Tea>(from preset in presets.Presets orderby preset.Temp descending select preset);
+                        sortedList = new List<Tea>(from preset in presets.Presets orderby preset.Temp descending select preset);
                         break;
                     case "MaxInfusions":
-                        presetDataGrid.ItemsSource = new System.Collections.ObjectModel.ObservableCollection<Tea>(from preset in presets.Presets orderby preset.MaxInfusions descending select preset);
+                        sortedList = new List<Tea>(from preset in presets.Presets orderby preset.MaxInfusions descending select preset);
                         break;
                 }
 
                 e.Column.SortDirection = DataGridSortDirection.Descending;
+            }
+
+            if (e.Column.Tag.ToString() != "AltName")
+            {
+                presets.Presets = null;
+                presets.Presets = sortedList;
+                presetDataGrid.ItemsSource = presets.Presets;
             }
 
             System.GC.Collect();
@@ -577,7 +632,7 @@ namespace GongFuTimerCSharp
         {
             if((sender as ToggleSwitch).IsOn)
             {
-                isHighlightsTea = true;
+                settings.isHighlightsTea = true;
                 if(activeTea != null)
                 {
                     String highlightName = activeTea.Type.ToString() + "HighlightDark";
@@ -586,9 +641,11 @@ namespace GongFuTimerCSharp
             }
             else
             {
-                isHighlightsTea = false;
+                settings.isHighlightsTea = false;
                 highlight = (SolidColorBrush)Application.Current.Resources["Highlight"];
             }
+
+            settings.hasChanged = true;
         }
 
         private void presetDataGrid_SelectRow(object sender, SelectionChangedEventArgs e)
@@ -605,6 +662,12 @@ namespace GongFuTimerCSharp
         private void PresetDataGrid_LoadingRow(object sender, DataGridRowEventArgs e)
         {
             //Check if the row already exists in the list
+            if(hasSorted)
+            {
+                presetRows.Clear();
+                hasSorted = false;
+            }
+
             bool isRowFound = false;
             foreach(var row in presetRows)
             {
@@ -633,6 +696,36 @@ namespace GongFuTimerCSharp
                     break;
                 }
             }
+        }
+
+        private void AcrylicBG_Toggled(object sender, RoutedEventArgs e)
+        {
+            if ((sender as ToggleSwitch).IsOn)
+            {
+                (this.Background as AcrylicBrush).AlwaysUseFallback = false;
+                settings.isBackgroundAcrylic = true;
+            }
+            else
+            {
+                (this.Background as AcrylicBrush).AlwaysUseFallback = true;
+                settings.isBackgroundAcrylic = false;
+            }
+
+            settings.hasChanged = true;
+        }
+
+        private void RemLastTea_Toggled(object sender, RoutedEventArgs e)
+        {
+            if ((sender as ToggleSwitch).IsOn)
+            {
+                settings.isLastTeaRemembered = true;
+            }
+            else
+            {
+                settings.isLastTeaRemembered = false;
+            }
+
+            settings.hasChanged = true; 
         }
     }
 
@@ -683,15 +776,6 @@ namespace GongFuTimerCSharp
             this.Temp = temp;
             this.MaxInfusions = maxinfusions;
         }
-
-        public static PresetCollection GetTestTeas()
-        {
-            return new PresetCollection(new List<Tea>(new Tea[2] {
-                new Tea("Souchong Liquour", "Tong Mu Zhengshan Xiaozhong", TeaType.Black, 15, 5, 90, 8),
-                new Tea("Silver Needle", "Bai Hao Yin Zhen", TeaType.White, 45, 10, 90, 5)
-            }));
-        }
-
     }
 
     public class PresetCollection
@@ -706,6 +790,105 @@ namespace GongFuTimerCSharp
         public PresetCollection()
         {
             Presets = new List<Tea>();
+        }
+    }
+
+    //Settings
+    public class AppSettings
+    {
+        public bool isHighlightsTea { get; set; }
+        public bool isBackgroundAcrylic { get; set; }
+        public bool isLastTeaRemembered { get; set; }
+        public Tea lastTea { get; set; }
+        public bool hasChanged = false;
+
+        public AppSettings()
+        {
+        }
+
+        public AppSettings(MainPage sender)
+        {
+            LoadSettingsFromFile(sender);
+        }
+
+        public AppSettings(bool ishighlightstea, bool isbackgroundacrylic, bool islasttearemembered, Tea lasttea)
+        {
+            isHighlightsTea = ishighlightstea;
+            isBackgroundAcrylic = isbackgroundacrylic;
+            isLastTeaRemembered = islasttearemembered;
+            lastTea = lasttea;
+        }
+
+        public async void LoadSettingsFromFile(MainPage sender)
+        {
+            //Get the file path in appdata/local
+            StorageFile file = null;
+            String path = System.IO.Directory.CreateDirectory(ApplicationData.Current.LocalFolder.Path + "\\GongFuTimer\\").ToString();
+            StorageFolder jFolder = await StorageFolder.GetFolderFromPathAsync(path);
+
+            //check if it exists or not
+            if (System.IO.File.Exists(path + "settings.json"))
+            {
+                file = await jFolder.GetFileAsync("settings.json");
+            }
+            else
+            {
+                file = await jFolder.CreateFileAsync("settings.json");
+            }
+
+            //Read from the file
+            String json = await FileIO.ReadTextAsync(file);
+
+            //Convert from JSON to PresetCollection
+            var jsonObj = JsonConvert.DeserializeObject<AppSettings>(json);
+
+            //validate presets, setting everything to the default values if null
+            if (jsonObj == null)
+            {
+                isHighlightsTea = true;
+                isBackgroundAcrylic = true;
+                isLastTeaRemembered = false;
+                lastTea = new Tea();
+            }
+            else
+            {
+                isHighlightsTea = jsonObj.isHighlightsTea;
+                isBackgroundAcrylic = jsonObj.isBackgroundAcrylic;
+                isLastTeaRemembered = jsonObj.isLastTeaRemembered;
+                lastTea = jsonObj.lastTea;
+            }
+
+            //Apply the settings on the mainpage
+            sender.ApplySettings(this);
+            sender.SwitchDisplay(MainPage.AppSection.Timer);
+        }
+
+        public async void SaveSettingsToFile()
+        {
+            StorageFile file;
+            String path = System.IO.Directory.CreateDirectory(ApplicationData.Current.LocalFolder.Path + "\\GongFuTimer\\").ToString();
+            StorageFolder jFolder = await StorageFolder.GetFolderFromPathAsync(path);
+
+            if (System.IO.File.Exists(path + "settings.json"))
+            {
+                file = await jFolder.GetFileAsync("settings.json");
+            }
+            else
+            {
+                file = await jFolder.CreateFileAsync("settings.json");
+            }
+
+            String json = JsonConvert.SerializeObject(this, Formatting.Indented);
+
+            try
+            {
+                await FileIO.WriteTextAsync(file, json);
+            }
+            catch (System.IO.FileLoadException)
+            {
+                //File not found
+            }
+            this.hasChanged = false;
         }
     }
 }

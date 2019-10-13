@@ -6,8 +6,10 @@
     xmlns:local="using:GongFuTimerCSharp"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-    mc:Ignorable="d"
-    Background="{ThemeResource SystemRevealListLowColor}" Width="Auto" Height="Auto">
+    mc:Ignorable="d" Width="Auto" Height="Auto">
+    <Page.Background>
+        <AcrylicBrush FallbackColor="#FF1F1F1F" TintColor="#FF2D2D2D" TintOpacity="0.8" BackgroundSource="HostBackdrop"/>
+    </Page.Background>
 
     <Grid>
         <Grid.ColumnDefinitions>
@@ -35,21 +37,25 @@
             </TextBlock>
 
             <!--Settings Menu-->
-            <Grid x:Name="SettingsGrid" Visibility="Collapsed" MinHeight="300" Margin="0,0,0,0" VerticalAlignment="Stretch">
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="50*"/>
-                    <ColumnDefinition Width="50*"/>
-                </Grid.ColumnDefinitions>
-                <StackPanel Grid.Column="0" HorizontalAlignment="Center">
-                    <ToggleSwitch x:Name="TeaHighlightSwitch" OnContent="Tea Colours" OffContent="System" Header="Highlights" VerticalAlignment="Center" Margin="0,8,0,0" IsOn="True" FontSize="12" Toggled="TeaHighlights_Toggled"/>
-                </StackPanel>
-                <StackPanel Grid.Column="1">
+            <Viewbox Stretch="Uniform">
+                <Grid x:Name="SettingsGrid" Visibility="Collapsed" MinHeight="300" Margin="0,0,0,0" VerticalAlignment="Stretch" Width="Auto" Height="Auto">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="50*"/>
+                        <ColumnDefinition Width="50*"/>
+                    </Grid.ColumnDefinitions>
+                    <StackPanel Grid.Column="0" HorizontalAlignment="Center">
+                        <ToggleSwitch x:Name="TeaHighlightSwitch" OnContent="Tea Colours" OffContent="System" Header="Highlights" VerticalAlignment="Center" Margin="8" IsOn="True" FontSize="12" Toggled="TeaHighlights_Toggled"/>
+                        <ToggleSwitch x:Name="AcrylicBGSwitch" OnContent="Acrylic" OffContent="Opaque" Header="Background Style" VerticalAlignment="Center" Margin="8" IsOn="True" FontSize="12" Toggled="AcrylicBG_Toggled"/>
+                        <ToggleSwitch x:Name="RemLastTeaSwitch" OnContent="Yes" OffContent="No" Header="Remember Last Tea" VerticalAlignment="Center" Margin="8" IsOn="True" FontSize="12" Toggled="RemLastTea_Toggled"/>
+                    </StackPanel>
+                    <StackPanel Grid.Column="1">
 
-                </StackPanel>
-            </Grid>
+                    </StackPanel>
+                </Grid>
+            </Viewbox>
 
             <!--Load Preset Menu-->
-            <Viewbox x:Name="PresetGrid" Stretch="Uniform" Visibility="Visible" Width="Auto" Height="Auto">
+            <Viewbox x:Name="PresetGrid" Stretch="Uniform" Visibility="Collapsed" Width="Auto" Height="Auto">
                 <Grid Visibility="Visible">
                     <Grid.RowDefinitions>
                         <RowDefinition Height="80*" MaxHeight="300"/>
@@ -102,7 +108,7 @@
             </Viewbox>
 
             <!--Timer Menu-->
-            <Grid x:Name="GongFuGrid" Visibility="Collapsed">
+            <Grid x:Name="GongFuGrid" Visibility="Visible">
                 <Grid.RowDefinitions>
                     <RowDefinition Height="30*"/>
                     <RowDefinition Height="35*"/>
@@ -127,23 +133,23 @@
                 </Viewbox>
                 <!--time input panel-->
                 <Viewbox Grid.Row="1" StretchDirection="UpOnly" Stretch="Uniform">
-                <StackPanel x:Name="timeInputPanel" Orientation="Horizontal" Grid.Row="1" Margin="8" VerticalAlignment="Top">
-                    <StackPanel x:Name="baseTimePanel" Padding="0" Margin="0,0,40,0">
-                        <TextBox x:Name="baseSecsTextBox" Text="0" TextAlignment="Center" InputScope="Number" Header="Base Infusion Seconds"/>
+                    <StackPanel x:Name="timeInputPanel" Orientation="Horizontal" Grid.Row="1" Margin="8" VerticalAlignment="Top">
+                        <StackPanel x:Name="baseTimePanel" Padding="0" Margin="0,0,40,0">
+                            <TextBox x:Name="baseSecsTextBox" Text="0" TextAlignment="Center" InputScope="Number" Header="Base Infusion Seconds"/>
+                        </StackPanel>
+                        <StackPanel x:Name="modifierPanel" Margin="0,0,40,0">
+                            <TextBox x:Name="infSecsTextBox" Text="0" TextAlignment="Center" InputScope="Number" Header="+ Infusion Seconds" />
+                        </StackPanel>
+                        <StackPanel x:Name="currentInfusionPanel">
+                            <TextBlock Text="Current Infusion"/>
+                            <Border x:Name="infNumBorder" BorderThickness="2,2,2,2" VerticalAlignment="Stretch" Margin="0,4,0,0" Background="#7F000000">
+                                <Border.BorderBrush>
+                                    <SolidColorBrush Color="#66FFFFFF"/>
+                                </Border.BorderBrush>
+                                <TextBlock x:Name="infNumText" Text="0" HorizontalAlignment="Center" VerticalAlignment="Stretch" Margin="0,4.25,0,4.25"/>
+                            </Border>
+                        </StackPanel>
                     </StackPanel>
-                    <StackPanel x:Name="modifierPanel" Margin="0,0,40,0">
-                        <TextBox x:Name="infSecsTextBox" Text="0" TextAlignment="Center" InputScope="Number" Header="+ Infusion Seconds" />
-                    </StackPanel>
-                    <StackPanel x:Name="currentInfusionPanel">
-                        <TextBlock Text="Current Infusion"/>
-                        <Border x:Name="infNumBorder" BorderThickness="2,2,2,2" VerticalAlignment="Stretch" Margin="0,4,0,0" Background="#7F000000">
-                            <Border.BorderBrush>
-                                <SolidColorBrush Color="#66FFFFFF"/>
-                            </Border.BorderBrush>
-                            <TextBlock x:Name="infNumText" Text="0" HorizontalAlignment="Center" VerticalAlignment="Stretch" Margin="0,4.25,0,4.25"/>
-                        </Border>
-                    </StackPanel>
-                </StackPanel>
                 </Viewbox>
                 <Viewbox StretchDirection="UpOnly" Stretch="Uniform" Grid.Row="2">
                     <Grid x:Name="inputPanel" Margin="8" Grid.Row="2" VerticalAlignment="Bottom">
